@@ -47,7 +47,9 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\DiscreteModel\DiscreteMotionModel.cs" />
+     <Compile Include="Assets\Scripts\DiscreteModel\DiscretePathPlanning.cs" />
      <Compile Include="Assets\Scripts\Graph.cs" />
+     <Compile Include="Assets\Scripts\GraphBuilder.cs" />
      <Compile Include="Assets\Scripts\MotionModel.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
