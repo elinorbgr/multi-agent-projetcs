@@ -41,4 +41,8 @@ public class GraphBuilder : MonoBehaviour {
 
 		g.CreateDisplayers();
 	}
+
+	public Graph getGraph() {
+		return this.g;
+	}
 }
