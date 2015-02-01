@@ -17,7 +17,7 @@ public class DiscreteMotionModel : MonoBehaviour, IMotionModel {
 		this.moving = false;
 		this.delta = 0.0f;
 		if (graphBuilder != null) {
-			GraphBuilder builder = (GraphBuilder) graphBuilder.GetComponent(typeof(GraphBuilder));
+			IGraphBuilder builder = (IGraphBuilder) graphBuilder.GetComponent(typeof(IGraphBuilder));
 			this.pathPlanner = new DiscretePathPlanning(builder.getGraph());
 		} else {
 			this.pathPlanner = new DiscretePathPlanning(new Graph());
