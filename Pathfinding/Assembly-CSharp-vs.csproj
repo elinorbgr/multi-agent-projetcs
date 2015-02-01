@@ -53,7 +53,7 @@
      <Compile Include="Assets\Scripts\Graph.cs" />
      <Compile Include="Assets\Scripts\GraphBuilder.cs" />
      <Compile Include="Assets\Scripts\GraphBuilders\FixedGraphBuilder.cs" />
-     <Compile Include="Assets\Scripts\GraphBuilders\FullConnectedGridgraphBuilder.cs" />
+     <Compile Include="Assets\Scripts\GraphBuilders\FullConnectedGridGraphBuilder.cs" />
      <Compile Include="Assets\Scripts\GraphBuilders\GridGraphBuilder.cs" />
      <Compile Include="Assets\Scripts\KinematicModel\KinematicMotionModel.cs" />
      <Compile Include="Assets\Scripts\MotionModel.cs" />

@@ -1,16 +1,21 @@
 ﻿using UnityEngine;
 using System.Collections;
 
-public class GraphCreatorDiscrete: MonoBehaviour, IGraphBuilder {
-	
+public class GridGraphBuilder: MonoBehaviour, IGraphBuilder {
+
 	private Graph g;
+	public float space;
+	public float top;
+	public float bottom;
+	public float left;
+	public float right;
 	
 	// Use this for initialization
 	void Start () {
 		g = new Graph();
 		
-		for(int i = -4; i <= 4; i += 2){
-			for(int j = -4; j <= 4; j += 2){
+		for(float i = top; i <= bottom; i += space){
+			for(float j = left; j <= right; j += space){
 				g.nodes.Add(new Graph.Node(new Vector3(i, 0.5F,j)));
 			}
 		}
@@ -19,8 +24,11 @@ public class GraphCreatorDiscrete: MonoBehaviour, IGraphBuilder {
 			foreach(Graph.Node m in g.nodes){
 				Vector3 direction = m.pos - n.pos;
 				float distance = direction.magnitude;
-				if(distance == 2 && !Physics.Raycast(n.pos, direction, distance+0.25f)){
-					//the "distance == 2" tells the nodes to connect only their adjacent nodes
+				if(distance <= space &&
+					!( Physics.Raycast(n.pos, direction, distance+0.25f) ||
+					   Physics.Raycast(m.pos, -direction, distance+0.25f) )
+					){
+					//the "distance <= space" tells the nodes to connect only their adjacent nodes
 					n.connect(m);
 				}
 			}
