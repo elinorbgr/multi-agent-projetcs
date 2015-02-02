@@ -7,19 +7,11 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
     private List<Vector3> waypoints;
     private bool moving;
     public float speed;
-    public GameObject graphBuilder;
-    private DiscretePathPlanning pathPlanner;
 
     // Use this for initialization
     void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
-        if (graphBuilder != null) {
-            IGraphBuilder builder = (IGraphBuilder) graphBuilder.GetComponent(typeof(IGraphBuilder));
-            this.pathPlanner = new DiscretePathPlanning(builder.getGraph());
-        } else {
-            this.pathPlanner = new DiscretePathPlanning(new Graph());
-        }
     }
     
     // Update is called once per frame
@@ -51,7 +43,7 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
     }
 
     void IMotionModel.MoveOrder(Vector3 goal) {
-        ((IMotionModel)this).SetWaypoints(this.pathPlanner.MoveOrder(this.transform.position, goal));
+        ((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal));
     }
     
 }

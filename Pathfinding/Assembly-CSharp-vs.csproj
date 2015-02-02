@@ -56,7 +56,9 @@
      <Compile Include="Assets\Scripts\GraphBuilders\FullConnectedGridGraphBuilder.cs" />
      <Compile Include="Assets\Scripts\GraphBuilders\GridGraphBuilder.cs" />
      <Compile Include="Assets\Scripts\KinematicModel\KinematicMotionModel.cs" />
+     <Compile Include="Assets\Scripts\KinematicModel\KinematicRTTPathPlanning.cs" />
      <Compile Include="Assets\Scripts\MotionModel.cs" />
+     <Compile Include="Assets\Scripts\Tree.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>
