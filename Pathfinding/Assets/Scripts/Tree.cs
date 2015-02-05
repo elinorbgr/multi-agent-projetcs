@@ -38,6 +38,19 @@ public class Tree {
                 || Physics.Raycast(b, a-b, (a-b).magnitude));
     }
 
+    public Node nearestOf(Vector3 pos) {
+        float min_dist = float.PositiveInfinity;
+        Node nearest = null;
+        foreach(Node n in this.nodes) {
+            float dist = (pos - n.pos).magnitude;
+            if (dist < min_dist) {
+                min_dist = dist;
+                nearest = n;
+            }
+        }
+        return nearest;
+    }
+
     public Node connectNearestVisible(Vector3 pos) {
         float min_dist = float.PositiveInfinity;
         Node nearest = null;

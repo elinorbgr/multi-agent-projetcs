@@ -16,7 +16,13 @@ public class KinematicRTTPathPlanning {
 
         Tree t = new Tree(start);
 
-        while (true) {
+        if (visible(start, goal)) {
+            Tree.Node g = new Tree.Node(goal, t.root);
+            t.nodes.Add(g);
+            return g.pathFromRoot();
+        }
+
+        for(int i = 0; i<10000; i++) { // do at most 10.000 iterations
             Vector3 point = new Vector3(Random.Range(rmin, rmax), 0.5f, Random.Range(rmin, rmax));
             Tree.Node n = t.connectNearestVisible(point);
             if (n != null) {
@@ -27,7 +33,7 @@ public class KinematicRTTPathPlanning {
                 }
             }
         }
-
+        return t.nearestOf(goal).pathFromRoot();
     }
 
 }
