@@ -22,6 +22,14 @@ public class Tree {
             }
             return new List<Vector3>(path);
         }
+
+        public float distToRoot() {
+            if (this.parent == null) {
+                return 0.0F;
+            } else {
+                return this.parent.distToRoot() + (pos - parent.pos).magnitude;
+            }
+        }
     }
 
     public Node root;
@@ -65,5 +73,22 @@ public class Tree {
         Node node = new Node(pos, nearest);
         this.nodes.Add(node);
         return node;
+    }
+
+    public void stealChildren(Node me, float maxdist) {
+        List<KeyValuePair<float, Node>> targets = new List<KeyValuePair<float, Node>>();
+        foreach(Node n in this.nodes) {
+            float d = (me.pos - n.pos).magnitude;
+            if (n != me && d < maxdist) {
+                targets.Add(new KeyValuePair<float, Node>(d, n));
+            }
+        }
+        targets.Sort((x, y) => x.Key.CompareTo(y.Key));
+        float myd = me.distToRoot();
+        foreach(KeyValuePair<float, Node> kv in targets) {
+            if(kv.Value.distToRoot() > myd + kv.Key) {
+                kv.Value.parent = me;
+            }
+        }
     }
 }

@@ -26,6 +26,7 @@ public class KinematicRTTPathPlanning {
             Vector3 point = new Vector3(Random.Range(rmin, rmax), 0.5f, Random.Range(rmin, rmax));
             Tree.Node n = t.connectNearestVisible(point);
             if (n != null) {
+                t.stealChildren(n, 1F);
                 if (visible(point, goal)) {
                     Tree.Node g = new Tree.Node(goal, n);
                     t.nodes.Add(g);
