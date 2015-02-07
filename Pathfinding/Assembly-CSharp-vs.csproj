@@ -47,6 +47,7 @@
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CameraController.cs" />
+     <Compile Include="Assets\Scripts\DifferentialDriveModel\DifferentialDriveMotionModel.cs" />
      <Compile Include="Assets\Scripts\DiscreteModel\DiscreteMotionModel.cs" />
      <Compile Include="Assets\Scripts\DiscreteModel\DiscretePathPlanning.cs" />
      <Compile Include="Assets\Scripts\DynamicModel\DynamicMotionModel.cs" />
