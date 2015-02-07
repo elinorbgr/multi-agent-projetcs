@@ -57,6 +57,7 @@
      <Compile Include="Assets\Scripts\GraphBuilders\FullConnectedGridGraphBuilder.cs" />
      <Compile Include="Assets\Scripts\GraphBuilders\GridGraphBuilder.cs" />
      <Compile Include="Assets\Scripts\GraphBuilders\OctGridGraphBuilder.cs" />
+     <Compile Include="Assets\Scripts\KinematicCarModel\KinematicCarMotionModel.cs" />
      <Compile Include="Assets\Scripts\KinematicModel\KinematicMotionModel.cs" />
      <Compile Include="Assets\Scripts\KinematicModel\KinematicRTTPathPlanning.cs" />
      <Compile Include="Assets\Scripts\Misc\DiscreteTerrain.cs" />
