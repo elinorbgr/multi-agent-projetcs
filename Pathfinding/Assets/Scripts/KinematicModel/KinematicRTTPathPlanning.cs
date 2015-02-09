@@ -9,10 +9,7 @@ public class KinematicRTTPathPlanning {
                 || Physics.Raycast(b, a-b, (a-b).magnitude));
     }
 
-    static public List<Vector3> MoveOrder(Vector3 start, Vector3 goal) {
-
-        float rmin = -4.5f;
-        float rmax = 4.5f;
+    static public List<Vector3> MoveOrder(Vector3 start, Vector3 goal, float minx, float miny, float maxx, float maxy) {
 
         Tree t = new Tree(start);
 
@@ -23,7 +20,7 @@ public class KinematicRTTPathPlanning {
         }
 
         for(int i = 0; i<10000; i++) { // do at most 10.000 iterations
-            Vector3 point = new Vector3(Random.Range(rmin, rmax), 0.5f, Random.Range(rmin, rmax));
+            Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
             Tree.Node n = t.connectNearestVisible(point);
             if (n != null) {
                 t.stealChildren(n, 1F);

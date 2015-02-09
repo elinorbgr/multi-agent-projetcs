@@ -10,6 +10,10 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     private float speed;
     private float delta;
     private float nodeseparation;
+    public float minx;
+    public float miny;
+    public float maxx;
+    public float maxy;
 
     private List<GameObject> lines;
     
@@ -75,7 +79,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
             line_renderer.SetVertexCount(2);
             line_renderer.SetPosition(0, previous);
             line_renderer.SetPosition(1, v);
-            line_renderer.SetWidth(0.02F, 0.02F);
+            line_renderer.SetWidth(0.1F, 0.1F);
             previous = v;
         }
     }
@@ -89,7 +93,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     }
 
     void IMotionModel.MoveOrder(Vector3 goal) {
-        ((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal));
+        ((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
     }
     
 }
