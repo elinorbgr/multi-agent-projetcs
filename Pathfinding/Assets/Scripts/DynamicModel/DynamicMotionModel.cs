@@ -47,7 +47,9 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
 
             rigidbody.AddForce(velocitydiff);
         } else if (rigidbody.velocity.magnitude > 0) {
-            if (rigidbody.velocity.magnitude * 10 > acceleration) {
+            if (rigidbody.velocity.magnitude < 0.1f) {
+                rigidbody.velocity = new Vector3(0f, 0f, 0f);
+            } else if (rigidbody.velocity.magnitude * 10 > acceleration) {
                 rigidbody.AddForce(-rigidbody.velocity.normalized * acceleration);
             } else {
                 rigidbody.AddForce(-rigidbody.velocity.normalized * 10);
