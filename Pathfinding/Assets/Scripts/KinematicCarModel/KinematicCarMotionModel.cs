@@ -8,6 +8,8 @@ public class KinematicCarMotionModel : MonoBehaviour, IMotionModel {
     private bool moving;
     public float speed;
     public float maxAngle;
+	private bool rotating;
+	public float rotationSpeed;
 
     private List<GameObject> lines;
     
@@ -15,28 +17,43 @@ public class KinematicCarMotionModel : MonoBehaviour, IMotionModel {
     void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
+		this.rotating = false;
         this.lines = new List<GameObject>();
     }
     
     // Update is called once per frame
     void Update () {
-        if (moving) {
-            if (Mathf.Abs(getAngle ()) > 1) {
-                setAngle (getAngle ());
-            } 
-            setVelocity();
-            if ((this.waypoints [0] - rigidbody.position).magnitude < 0.25) {
+        if (moving || rotating) {
+            if ((this.waypoints [0] - rigidbody.position).magnitude < 0.9f) {
                 this.waypoints.RemoveAt (0);
                 Object.Destroy (this.lines [0]);
                 this.lines.RemoveAt (0);
+				this.moving = false;
+				if (this.waypoints.Count > 0) {
+					this.rotating = true;
+				}
                 if (this.waypoints.Count == 0) {
-                    moving = false;
-                    rigidbody.velocity = new Vector3 (0F, 0F, 0F);
+					rigidbody.velocity = new Vector3 (0F, 0F, 0F);
+					moving = false;
                     return;
                 } 
             }
-            
         }
+		if (rotating) {
+			float angle = getAngle();
+			float length = transform.lossyScale.z;
+			float turn = rigidbody.velocity.magnitude / length;
+			if (Mathf.Abs(angle) > rotationSpeed * Time.deltaTime) {
+				rotate(Mathf.Sign(angle) * rotationSpeed * Time.deltaTime*turn);
+				setVelocity(speed);
+				
+			} else {
+				rotate(getAngle());
+				setVelocity(speed);
+				this.rotating = false;
+				this.moving = true;
+			}
+		}
     }
     
     float getAngle(){
@@ -47,20 +64,12 @@ public class KinematicCarMotionModel : MonoBehaviour, IMotionModel {
         return sign*angle;
         
     }
-    void setAngle(float angle){
-
-        float length = transform.lossyScale.z;
-        float turn = rigidbody.velocity.magnitude / length;
-        float sign = Mathf.Sign (angle);
-        if (Mathf.Abs(angle) > maxAngle) {
-                        angle = sign*maxAngle;
-                }
-
-        this.transform.Rotate (new Vector3 (0f,-angle, 0f)*turn*Time.deltaTime);
+    void rotate(float angle){
+        this.transform.Rotate (new Vector3 (0f,-angle, 0f));
     }
-    
-    void setVelocity() {
-        rigidbody.velocity = transform.forward*speed;
+
+    void setVelocity(float movespeed) {
+        rigidbody.velocity = transform.forward*movespeed;
     }
     void displayTrajectory() {
         foreach(GameObject o in this.lines) {
