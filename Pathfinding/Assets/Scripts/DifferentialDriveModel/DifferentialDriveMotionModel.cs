@@ -23,26 +23,30 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
     // Update is called once per frame
     void Update () {
         if (moving || rotating) {
-            if ((this.waypoints [0] - rigidbody.position).magnitude < 0.25) {
+            if ((this.waypoints [0] - rigidbody.position).magnitude < 0.7f) {
                 this.waypoints.RemoveAt (0);
                 Object.Destroy (this.lines [0]);
                 this.lines.RemoveAt (0);
-                rigidbody.velocity = new Vector3 (0F, 0F, 0F);
                 this.moving = false;
                 if (this.waypoints.Count > 0) {
                     this.rotating = true;
                 }
+				if(this.waypoints.Count == 0){
+					rigidbody.velocity = new Vector3 (0F,0F,0f);
+				}
             }
         }
         if (rotating) {
             float angle = getAngle();
             if (Mathf.Abs(angle) > rotationSpeed * Time.deltaTime) {
                 rotate(Mathf.Sign(angle) * rotationSpeed * Time.deltaTime);
+				setVelocity(speed*0.5f);
+
             } else {
                 rotate(getAngle());
+				setVelocity(speed);
                 this.rotating = false;
                 this.moving = true;
-                setVelocity();
             }
         }
     }
@@ -59,8 +63,8 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
         this.transform.Rotate (new Vector3 (0f,-angle, 0f));
     }
 
-    void setVelocity() {
-        rigidbody.velocity = transform.forward*speed;
+    void setVelocity(float movespeed) {
+        rigidbody.velocity = transform.forward*movespeed;
     }
     void displayTrajectory() {
         foreach(GameObject o in this.lines) {
