@@ -24,7 +24,8 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
     // Update is called once per frame
     void Update () {
         if (moving) {
-            if((this.waypoints[0] - rigidbody.position).magnitude<0.25){
+            if((this.waypoints[0] - rigidbody.position).magnitude<1
+                || Vector3.Dot(this.waypoints[0] - rigidbody.position, rigidbody.velocity) < 0){
                 this.waypoints.RemoveAt(0);
                 Object.Destroy(this.lines[0]);
                 this.lines.RemoveAt(0);
