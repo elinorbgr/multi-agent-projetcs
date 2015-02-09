@@ -19,16 +19,13 @@ public class KinematicRTTPathPlanning {
             return g.pathFromRoot();
         }
 
-        for(int i = 0; i<10000; i++) { // do at most 10.000 iterations
+        float baseradius = (maxx+maxy-minx-miny)/(2*5);
+
+        for(int i = 0; i<1000; i++) { // do at most 10.000 iterations
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
             Tree.Node n = t.connectNearestVisible(point);
             if (n != null) {
-                t.stealChildren(n, 1F);
-                if (visible(point, goal)) {
-                    Tree.Node g = new Tree.Node(goal, n);
-                    t.nodes.Add(g);
-                    return g.pathFromRoot();
-                }
+                t.stealChildren(n, baseradius);
             }
         }
         return t.nearestOf(goal).pathFromRoot();

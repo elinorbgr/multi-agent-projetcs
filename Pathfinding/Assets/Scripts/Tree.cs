@@ -79,7 +79,7 @@ public class Tree {
         List<KeyValuePair<float, Node>> targets = new List<KeyValuePair<float, Node>>();
         foreach(Node n in this.nodes) {
             float d = (me.pos - n.pos).magnitude;
-            if (n != me && d < maxdist) {
+            if (n != me && d < maxdist && visible(n.pos, me.pos)) {
                 targets.Add(new KeyValuePair<float, Node>(d, n));
             }
         }
