@@ -25,17 +25,16 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     void FixedUpdate () {
         
         if (moving) {
-            if (this.waypoints.Count == 0) {
-                moving = false;
-                return;
-            }
-
             Vector3 targetdir = this.waypoints[0] - rigidbody.position;
 
             if(targetdir.magnitude <= 3f){
                 this.waypoints.RemoveAt(0);
                 Object.Destroy(this.lines[0]);
                 this.lines.RemoveAt(0);
+                if (this.waypoints.Count == 0) {
+                    moving = false;
+                    return;
+                }
                 targetdir = this.waypoints[0] - rigidbody.position;
             }
 
