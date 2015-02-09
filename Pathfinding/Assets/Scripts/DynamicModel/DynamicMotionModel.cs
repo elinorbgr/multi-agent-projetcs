@@ -7,9 +7,6 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     private List<Vector3> waypoints;
     private bool moving;
     public float acceleration;
-    private float speed;
-    private float delta;
-    private float nodeseparation;
     public float minx;
     public float miny;
     public float maxx;
@@ -33,32 +30,27 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
                 return;
             }
 
-            if(delta==0.00f){
-                Vector3 direction2 = this.waypoints[0] - rigidbody.position;
-                nodeseparation = direction2.magnitude;
-                rigidbody.isKinematic = false;
-            }
+            Vector3 targetdir = this.waypoints[0] - rigidbody.position;
 
-            delta += Time.deltaTime;
-            Vector3 direction = this.waypoints[0] - rigidbody.position;
-            float distance = direction.magnitude;
-            direction.Normalize();
-
-            if(distance>=(nodeseparation/2)){
-                rigidbody.AddForce(direction*acceleration);
-            }
-
-            if(distance<(nodeseparation/2)){
-                rigidbody.AddForce(-direction*acceleration);
-            }
-
-            if(distance <= 0.03f){
-                rigidbody.isKinematic = true;
+            if(targetdir.magnitude <= 3f){
                 this.waypoints.RemoveAt(0);
                 Object.Destroy(this.lines[0]);
                 this.lines.RemoveAt(0);
-                distance = direction.magnitude;
-                this.delta = 0.0f;
+                targetdir = this.waypoints[0] - rigidbody.position;
+            }
+
+            Vector3 velocitydiff = targetdir - rigidbody.velocity;
+
+            if (velocitydiff.magnitude > acceleration) {
+                velocitydiff = velocitydiff.normalized * acceleration;
+            }
+
+            rigidbody.AddForce(velocitydiff);
+        } else if (rigidbody.velocity.magnitude > 0) {
+            if (rigidbody.velocity.magnitude * 10 > acceleration) {
+                rigidbody.AddForce(-rigidbody.velocity.normalized * acceleration);
+            } else {
+                rigidbody.AddForce(-rigidbody.velocity.normalized * 10);
             }
         }
     }
@@ -93,7 +85,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     }
 
     void IMotionModel.MoveOrder(Vector3 goal) {
-        ((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
+        ((IMotionModel)this).SetWaypoints(DynamicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
     }
     
 }

@@ -52,6 +52,7 @@
      <Compile Include="Assets\Scripts\DiscreteModel\DiscretePathPlanning.cs" />
      <Compile Include="Assets\Scripts\DynamicCarModel\DynamicCarMotionModel.cs" />
      <Compile Include="Assets\Scripts\DynamicModel\DynamicMotionModel.cs" />
+     <Compile Include="Assets\Scripts\DynamicModel\DynamicRTTPathPlanning.cs" />
      <Compile Include="Assets\Scripts\Graph.cs" />
      <Compile Include="Assets\Scripts\GraphBuilder.cs" />
      <Compile Include="Assets\Scripts\GraphBuilders\FixedGraphBuilder.cs" />
