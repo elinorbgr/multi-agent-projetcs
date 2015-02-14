@@ -38,7 +38,8 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
                 targetdir = this.waypoints[0] - rigidbody.position;
             }
 
-            Vector3 velocitydiff = targetdir - rigidbody.velocity;
+            Vector3 targetVelocity = Mathf.Sqrt(2*acceleration*targetdir.magnitude) * targetdir.normalized;
+            Vector3 velocitydiff = targetVelocity - rigidbody.velocity;
 
             if (velocitydiff.magnitude > acceleration) {
                 velocitydiff = velocitydiff.normalized * acceleration;
