@@ -39,7 +39,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
             }
 
             Vector3 targetVelocity = Mathf.Sqrt(2*acceleration*targetdir.magnitude) * targetdir.normalized;
-            Vector3 velocitydiff = targetVelocity - rigidbody.velocity;
+            Vector3 velocitydiff = 10*(targetVelocity - rigidbody.velocity);
 
             if (velocitydiff.magnitude > acceleration) {
                 velocitydiff = velocitydiff.normalized * acceleration;

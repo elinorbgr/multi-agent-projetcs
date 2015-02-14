@@ -2,36 +2,36 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class Tree {
+public class RTTTree<T> {
     public class Node {
         public Vector3 pos;
         public Node parent;
+        public float cost;
+        public T data;
 
-        public Node(Vector3 pos, Node parent) {
+        public Node(Vector3 pos, Node parent, float cost, T data) {
             this.pos = pos;
             this.parent = parent;
+            this.cost = cost;
+            this.data = data;
         }
 
         public List<Vector3> pathFromRoot() {
             LinkedList<Vector3> path = new LinkedList<Vector3> ();
             path.AddFirst(this.pos);
             Node p = this.parent;
-            Vector3 current = this.pos;
             while(p != null) {
-                if(p.parent == null || (!Tree.visible(current, p.parent.pos))) {
-                    path.AddFirst(p.pos);
-                    current = p.pos;
-                }
+                path.AddFirst(p.pos);
                 p = p.parent;
             }
             return new List<Vector3>(path);
         }
 
-        public float distToRoot() {
+        public float fullCost() {
             if (this.parent == null) {
                 return 0.0F;
             } else {
-                return this.parent.distToRoot() + (pos - parent.pos).magnitude;
+                return this.parent.fullCost() + this.cost;
             }
         }
     }
@@ -39,8 +39,8 @@ public class Tree {
     public Node root;
     public List<Node> nodes;
 
-    public Tree(Vector3 root) {
-        this.root = new Node(root, null);
+    public RTTTree(Vector3 root, T data) {
+        this.root = new Node(root, null, 0f, data);
         this.nodes = new List<Node>();
         this.nodes.Add(this.root);
     }
@@ -63,7 +63,7 @@ public class Tree {
         return nearest;
     }
 
-    public Node connectNearestVisible(Vector3 pos) {
+    public Node nearestVisibleOf(Vector3 pos) {
         float min_dist = float.PositiveInfinity;
         Node nearest = null;
         foreach(Node n in this.nodes) {
@@ -73,26 +73,12 @@ public class Tree {
                 nearest = n;
             }
         }
-        if (nearest == null) { return null; }
-        Node node = new Node(pos, nearest);
-        this.nodes.Add(node);
-        return node;
+        return nearest;
     }
 
-    public void stealChildren(Node me, float maxdist) {
-        List<KeyValuePair<float, Node>> targets = new List<KeyValuePair<float, Node>>();
-        foreach(Node n in this.nodes) {
-            float d = (me.pos - n.pos).magnitude;
-            if (n != me && d < maxdist && visible(n.pos, me.pos)) {
-                targets.Add(new KeyValuePair<float, Node>(d, n));
-            }
-        }
-        targets.Sort((x, y) => x.Key.CompareTo(y.Key));
-        float myd = me.distToRoot();
-        foreach(KeyValuePair<float, Node> kv in targets) {
-            if(kv.Value.distToRoot() > myd + kv.Key) {
-                kv.Value.parent = me;
-            }
-        }
+    public Node insert(Vector3 pos, Node parent, float cost, T data) {
+        Node n = new Node(pos, parent, cost, data);
+        this.nodes.Add(n);
+        return n;
     }
 }

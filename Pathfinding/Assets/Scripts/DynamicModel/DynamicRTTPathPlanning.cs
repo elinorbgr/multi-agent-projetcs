@@ -11,11 +11,10 @@ public class DynamicRTTPathPlanning {
 
     static public List<Vector3> MoveOrder(Vector3 start, Vector3 goal, float minx, float miny, float maxx, float maxy) {
 
-        Tree t = new Tree(start);
+        RTTTree<Vector3> t = new RTTTree<Vector3>(start, new Vector3(0f, 0f, 0f));
 
         if (visible(start, goal)) {
-            Tree.Node g = new Tree.Node(goal, t.root);
-            t.nodes.Add(g);
+            RTTTree<Vector3>.Node g = t.insert(goal, t.root, (start-goal).magnitude, new Vector3(0f,0f,0f));
             return g.pathFromRoot();
         }
 
@@ -23,9 +22,9 @@ public class DynamicRTTPathPlanning {
 
         for(int i = 0; i<1000; i++) { // do at most 10.000 iterations
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
-            Tree.Node n = t.connectNearestVisible(point);
-            if (n != null) {
-                t.stealChildren(n, baseradius);
+            RTTTree<Vector3>.Node p = t.nearestVisibleOf(point);
+            if (p != null) {
+                t.insert(point, p, (point-p.pos).magnitude, new Vector3(0f, 0f, 0f));
             }
         }
         return t.nearestOf(goal).pathFromRoot();
