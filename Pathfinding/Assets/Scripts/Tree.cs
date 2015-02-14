@@ -16,8 +16,12 @@ public class Tree {
             LinkedList<Vector3> path = new LinkedList<Vector3> ();
             path.AddFirst(this.pos);
             Node p = this.parent;
+            Vector3 current = this.pos;
             while(p != null) {
-                path.AddFirst(p.pos);
+                if(p.parent == null || (!Tree.visible(current, p.parent.pos))) {
+                    path.AddFirst(p.pos);
+                    current = p.pos;
+                }
                 p = p.parent;
             }
             return new List<Vector3>(path);
@@ -41,7 +45,7 @@ public class Tree {
         this.nodes.Add(this.root);
     }
 
-    private bool visible(Vector3 a, Vector3 b) {
+    public static bool visible(Vector3 a, Vector3 b) {
         return !( Physics.Raycast(a, b-a, (b-a).magnitude)
                 || Physics.Raycast(b, a-b, (a-b).magnitude));
     }
