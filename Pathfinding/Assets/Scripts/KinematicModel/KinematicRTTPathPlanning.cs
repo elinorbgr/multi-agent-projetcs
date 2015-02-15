@@ -46,5 +46,4 @@ public class KinematicRTTPathPlanning {
         }
         return t.nearestOf(goal).pathFromRoot();
     }
-
 }

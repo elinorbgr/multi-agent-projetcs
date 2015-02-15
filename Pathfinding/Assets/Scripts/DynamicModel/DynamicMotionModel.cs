@@ -25,9 +25,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     void FixedUpdate () {
         
         if (moving) {
-            Vector3 targetdir = this.waypoints[0] - rigidbody.position;
-
-            if(targetdir.magnitude <= 3f){
+            if((this.waypoints[0] - rigidbody.position).magnitude <= 3f){
                 this.waypoints.RemoveAt(0);
                 Object.Destroy(this.lines[0]);
                 this.lines.RemoveAt(0);
@@ -35,22 +33,10 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
                     moving = false;
                     return;
                 }
-                targetdir = this.waypoints[0] - rigidbody.position;
             }
 
-            Vector3 targetVelocity = Mathf.Sqrt(2*acceleration*targetdir.magnitude) * targetdir.normalized;
-            Vector3 velocitydiff = 10*(targetVelocity - rigidbody.velocity);
+            rigidbody.AddForce(computeAcceleration(rigidbody.position, rigidbody.velocity, this.waypoints[0], this.acceleration));
 
-            if (Physics.Raycast(rigidbody.position, rigidbody.velocity, Mathf.Sqrt(2*acceleration*targetdir.magnitude))) {
-                // if we keep this trajectory, we'll hit a wall !
-                velocitydiff -= rigidbody.velocity.normalized * acceleration * 10;
-            }
-
-            if (velocitydiff.magnitude > acceleration) {
-                velocitydiff = velocitydiff.normalized * acceleration;
-            }
-
-            rigidbody.AddForce(velocitydiff);
         } else if (rigidbody.velocity.magnitude > 0) {
             if (rigidbody.velocity.magnitude < 0.1f) {
                 rigidbody.velocity = new Vector3(0f, 0f, 0f);
@@ -60,6 +46,22 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
                 rigidbody.AddForce(-rigidbody.velocity.normalized * 10);
             }
         }
+    }
+
+    public static Vector3 computeAcceleration(Vector3 pos, Vector3 velocity, Vector3 goal, float maxAccel) {
+        Vector3 targetdir = goal-pos;
+        Vector3 targetVelocity = Mathf.Sqrt(2*maxAccel*targetdir.magnitude) * targetdir.normalized;
+        Vector3 velocitydiff = 10*(targetVelocity - velocity);
+
+        if (Physics.Raycast(pos, velocity, velocity.magnitude*velocity.magnitude/maxAccel/2)) {
+            // if we keep this trajectory, we'll hit a wall !
+            velocitydiff -= velocity.normalized * maxAccel * 10;
+        }
+
+        if (velocitydiff.magnitude > maxAccel) {
+            velocitydiff = velocitydiff.normalized * maxAccel;
+        }
+        return velocitydiff;
     }
 
     void displayTrajectory() {
@@ -92,7 +94,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     }
 
     void IMotionModel.MoveOrder(Vector3 goal) {
-        ((IMotionModel)this).SetWaypoints(DynamicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
+        ((IMotionModel)this).SetWaypoints(DynamicRTTPathPlanning.MoveOrder(this.transform.position, goal, this.acceleration, minx, miny, maxx, maxy));
     }
     
 }

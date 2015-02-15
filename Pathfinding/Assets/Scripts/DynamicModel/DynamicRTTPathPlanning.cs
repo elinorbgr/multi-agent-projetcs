@@ -9,7 +9,37 @@ public class DynamicRTTPathPlanning {
                 || Physics.Raycast(b, a-b, (a-b).magnitude));
     }
 
-    static public List<Vector3> MoveOrder(Vector3 start, Vector3 goal, float minx, float miny, float maxx, float maxy) {
+    class SteerResult {
+        public Vector3 endpos;
+        public Vector3 velocity;
+        public float cost;
+        public bool collided;
+
+        public SteerResult(Vector3 endpos, Vector3 velocity, float cost, bool collided) {
+            this.endpos = endpos;
+            this.velocity = velocity;
+            this.cost = cost;
+            this.collided = collided;
+        }
+    }
+
+    static SteerResult steer(Vector3 start, Vector3 goal, Vector3 velocity, float acc) {
+        float step = 0.1f;
+        float cost = 0f;
+        while ((start-goal).magnitude > 1 || cost < 3) {
+            Vector3 nextpos = start + velocity * step;
+            if(!visible(start, nextpos)) {
+                // collision !
+                return new SteerResult(start, velocity, cost, true);
+            }
+            velocity += DynamicMotionModel.computeAcceleration(start, velocity, goal, acc) * step;
+            start = nextpos;
+            cost += step;
+        }
+        return new SteerResult(start, velocity, cost, false);
+    }
+
+    static public List<Vector3> MoveOrder(Vector3 start, Vector3 goal, float acc, float minx, float miny, float maxx, float maxy) {
 
         RTTTree<Vector3> t = new RTTTree<Vector3>(start, new Vector3(0f, 0f, 0f));
 
@@ -24,7 +54,10 @@ public class DynamicRTTPathPlanning {
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
             RTTTree<Vector3>.Node p = t.nearestVisibleOf(point);
             if (p != null) {
-                t.insert(point, p, (point-p.pos).magnitude, new Vector3(0f, 0f, 0f));
+                SteerResult sr = steer(p.pos, point, p.data, acc);
+                if (!sr.collided) {
+                    t.insert(sr.endpos, p, sr.cost, sr.velocity);
+                }
             }
         }
         return t.nearestOf(goal).pathFromRoot();
