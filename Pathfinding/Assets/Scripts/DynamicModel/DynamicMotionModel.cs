@@ -41,6 +41,11 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
             Vector3 targetVelocity = Mathf.Sqrt(2*acceleration*targetdir.magnitude) * targetdir.normalized;
             Vector3 velocitydiff = 10*(targetVelocity - rigidbody.velocity);
 
+            if (Physics.Raycast(rigidbody.position, rigidbody.velocity, Mathf.Sqrt(2*acceleration*targetdir.magnitude))) {
+                // if we keep this trajectory, we'll hit a wall !
+                velocitydiff -= rigidbody.velocity.normalized * acceleration * 10;
+            }
+
             if (velocitydiff.magnitude > acceleration) {
                 velocitydiff = velocitydiff.normalized * acceleration;
             }
