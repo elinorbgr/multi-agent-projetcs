@@ -48,6 +48,8 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
         }
     }
 
+    // computes the acceleration given appropriate input
+    // it's a static method so it can be called from RTT
     public static Vector3 computeAcceleration(Vector3 pos, Vector3 velocity, Vector3 goal, float maxAccel) {
         Vector3 targetdir = goal-pos;
         Vector3 targetVelocity = Mathf.Sqrt(2*maxAccel*targetdir.magnitude) * targetdir.normalized;

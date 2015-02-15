@@ -23,13 +23,15 @@ public class DynamicRTTPathPlanning {
         }
     }
 
+    // Tries to simulate the mobile moving from 'start' with initial velocity 'velocity'
+    // up to as near as possible to 'goal', with maximal acceleration 'acc'
     static SteerResult steer(Vector3 start, Vector3 goal, Vector3 velocity, float acc) {
         float step = 0.1f;
         float cost = 0f;
         while ((start-goal).magnitude > 1 || cost < 3) {
             Vector3 nextpos = start + velocity * step;
             if(!visible(start, nextpos)) {
-                // collision !
+                // there is a collision, stop all !
                 return new SteerResult(start, velocity, cost, true);
             }
             velocity += DynamicMotionModel.computeAcceleration(start, velocity, goal, acc) * step;
@@ -40,10 +42,12 @@ public class DynamicRTTPathPlanning {
     }
 
     static public List<Vector3> MoveOrder(Vector3 start, Vector3 goal, float acc, float minx, float miny, float maxx, float maxy) {
-
+        // the data member of the nodes of the tree is a Vector3 : the velocity of the mobile
+        // when it reached it
         RTTTree<Vector3> t = new RTTTree<Vector3>(start, new Vector3(0f, 0f, 0f));
 
         if (visible(start, goal)) {
+            // if the goal is visible from start, no need to think too much
             RTTTree<Vector3>.Node g = t.insert(goal, t.root, (start-goal).magnitude, new Vector3(0f,0f,0f));
             return g.pathFromRoot();
         }
@@ -51,15 +55,20 @@ public class DynamicRTTPathPlanning {
         float baseradius = (maxx+maxy-minx-miny)/(2*5);
 
         for(int i = 0; i<1000; i++) { // do at most 10.000 iterations
+            // draw a random point
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
+            // find the nearest node
             RTTTree<Vector3>.Node p = t.nearestVisibleOf(point);
             if (p != null) {
+                // try to simulate a move from p.pos with initial velocity p.data to point
                 SteerResult sr = steer(p.pos, point, p.data, acc);
                 if (!sr.collided) {
+                    // the steering was successful (no collision with walls), we can keep the point !
                     t.insert(sr.endpos, p, sr.cost, sr.velocity);
                 }
             }
         }
+        // now, simple return the best path from the tree
         return t.nearestOf(goal).pathFromRoot();
     }
 }
