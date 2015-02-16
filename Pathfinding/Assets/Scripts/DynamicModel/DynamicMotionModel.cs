@@ -43,7 +43,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
             } else if (rigidbody.velocity.magnitude * 10 > acceleration) {
                 rigidbody.AddForce(-rigidbody.velocity.normalized * acceleration);
             } else {
-                rigidbody.AddForce(-rigidbody.velocity.normalized * 10);
+                rigidbody.AddForce(-rigidbody.velocity * 10);
             }
         }
     }

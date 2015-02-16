@@ -20,15 +20,24 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
         this.moving = false;
         this.lines = new List<GameObject>();
     }
+
+    static private bool visible(Vector3 a, Vector3 b) {
+        return !( Physics.Raycast(a, b-a, (b-a).magnitude)
+                || Physics.Raycast(b, a-b, (a-b).magnitude));
+    }
     
     // Update is called once per frame
     void Update () {
         if (moving) {
             if((this.waypoints[0] - rigidbody.position).magnitude<1
                 || Vector3.Dot(this.waypoints[0] - rigidbody.position, rigidbody.velocity) < 0){
-                this.waypoints.RemoveAt(0);
-                Object.Destroy(this.lines[0]);
-                this.lines.RemoveAt(0);
+
+                do {
+                    this.waypoints.RemoveAt(0);
+                    Object.Destroy(this.lines[0]);
+                    this.lines.RemoveAt(0);
+                } while (this.waypoints.Count > 1 && visible(rigidbody.position, this.waypoints[1]));
+
                 if (this.waypoints.Count == 0) {
                     moving = false;
                     rigidbody.velocity = new Vector3(0F,0F,0F);

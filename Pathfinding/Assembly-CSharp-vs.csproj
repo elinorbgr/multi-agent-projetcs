@@ -63,6 +63,7 @@
      <Compile Include="Assets\Scripts\KinematicCarModel\KinematicCarMotionModel.cs" />
      <Compile Include="Assets\Scripts\KinematicModel\KinematicMotionModel.cs" />
      <Compile Include="Assets\Scripts\KinematicModel\KinematicRTTPathPlanning.cs" />
+     <Compile Include="Assets\Scripts\MapReader.cs" />
      <Compile Include="Assets\Scripts\Misc\DiscreteTerrain.cs" />
      <Compile Include="Assets\Scripts\MotionModel.cs" />
      <Compile Include="Assets\Scripts\RTTTree.cs" />
