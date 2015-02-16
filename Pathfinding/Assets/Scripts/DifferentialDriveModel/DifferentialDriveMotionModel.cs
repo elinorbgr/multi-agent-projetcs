@@ -6,65 +6,79 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
 
     private List<Vector3> waypoints;
     private bool moving;
-    private bool rotating;
-    public float speed;
-    public float rotationSpeed;
+    public float maxSpeed;
+	public float length;
+    public float maxRotSpeed;
     public float minx;
     public float miny;
     public float maxx;
     public float maxy;
+	private float delta;
     
     private List<GameObject> lines;
-    
+	private RTTTree<Vector2> tree;
+
     // Use this for initialization
     void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
-        this.rotating = false;
         this.lines = new List<GameObject>();
+		this.tree = new RTTTree<Vector2>(new Vector3(0f,0f,0f), new Vector2(0f,0f));
     }
     
     // Update is called once per frame
     void Update () {
-        if (moving || rotating) {
+        if (moving) {
+			Vector2 u = computeU(rigidbody.position, this.waypoints[0], transform.forward, rigidbody.velocity.magnitude, length,maxSpeed, maxRotSpeed);
             if ((this.waypoints [0] - rigidbody.position).magnitude < 3f) {
                 this.waypoints.RemoveAt (0);
                 Object.Destroy (this.lines [0]);
                 this.lines.RemoveAt (0);
-                this.moving = false;
-                if (this.waypoints.Count > 0) {
-                    this.rotating = true;
-                }
+				rotate(u.y* Time.deltaTime);
+				rigidbody.velocity = rigidbody.transform.forward*u.x*0.1f;
+				delta+=Time.deltaTime;
 				if(this.waypoints.Count == 0){
-					rigidbody.velocity = new Vector3 (0F,0F,0f);
+					moving = false;
+					return;
 				}
             }
+			else{
+				rotate(u.y* Time.deltaTime);
+				rigidbody.velocity = rigidbody.transform.forward*u.x;
+			}
         }
-        if (rotating) {
-            float angle = getAngle();
-            if (Mathf.Abs(angle) > rotationSpeed * Time.deltaTime) {
-                rotate(Mathf.Sign(angle) * rotationSpeed * Time.deltaTime);
-				setVelocity(speed*0.25f);
-
-            } else {
-                rotate(getAngle());
-				setVelocity(speed);
-                this.rotating = false;
-                this.moving = true;
-            }
+        else {
+			rigidbody.velocity = new Vector3(0f,0f,0f);
         }
     }
     
-    float getAngle(){
-        Vector3 targetDir = this.waypoints[0] - transform.position;
-        Vector3 forward = transform.forward;
-        float angle = Vector3.Angle(targetDir, forward);
-        float sign = Mathf.Sign(Vector3.Cross(targetDir,forward).y);
-        return sign*angle;
+	public static Vector2 computeU(Vector3 pos, Vector3 goal, Vector3 forward, float velocity, float length,float maxSpeed, float maxRotSpeed) {
+		float angle = getAngle(pos, goal, forward);
+		float sign = Mathf.Sign (angle);
+		float speed = 0f;
+		if (Mathf.Cos(angle) < 0) {
+			// need to turn around
+		} else {
+			Vector3 targetdir = goal - pos;
+			speed = maxSpeed;
+		}
+		
+		if (Physics.Raycast(pos, forward, velocity+1f)) {
+			// if we keep this trajectory, we'll hit a wall !
+			speed = -maxSpeed;
+		}
+		return new Vector2(speed,angle);
+	}
 
-    }
+	static float getAngle(Vector3 pos, Vector3 goal, Vector3 velocity){
+		Vector3 targetDir = goal - pos;
+		float angle = Vector3.Angle(targetDir, velocity) * Mathf.Deg2Rad;
+		float sign = Mathf.Sign(Vector3.Cross(targetDir,velocity).y);
+		return sign*angle;
+	}
+
     void rotate(float angle){
-        this.transform.Rotate (new Vector3 (0f,-angle, 0f));
+		this.transform.Rotate (new Vector3 (0f,-angle / Mathf.Deg2Rad, 0f));
     }
 
     void setVelocity(float movespeed) {
@@ -94,13 +108,19 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
     void IMotionModel.SetWaypoints(List<Vector3> newval) {
         this.waypoints = newval;
         if(this.waypoints.Count > 0) {
-            this.rotating = true;
+			this.moving = true;
             displayTrajectory();
         }
     }
+	void OnDrawGizmos() {
+		if (this.tree != null) {
+			this.tree.drawGizmos();
+		}
+	}
     
     void IMotionModel.MoveOrder(Vector3 goal) {
-        ((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
+		this.tree = DynamicCarRTTPathPlanning.MoveOrder(this.transform.position, goal, transform.forward, rigidbody.velocity.magnitude, maxSpeed, maxRotSpeed, length, minx, miny, maxx, maxy);
+		((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
     }
     
 }

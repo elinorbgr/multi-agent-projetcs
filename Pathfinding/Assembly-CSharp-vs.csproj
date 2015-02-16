@@ -39,15 +39,16 @@
 	<Reference Include="System.Core" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="UnityEngine">
-	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
      <Compile Include="Assets\Scripts\CameraController.cs" />
      <Compile Include="Assets\Scripts\DifferentialDriveModel\DifferentialDriveMotionModel.cs" />
+     <Compile Include="Assets\Scripts\DifferentialDriveModel\DifferentialDriveRRT.cs" />
      <Compile Include="Assets\Scripts\DiscreteModel\DiscreteMotionModel.cs" />
      <Compile Include="Assets\Scripts\DiscreteModel\DiscretePathPlanning.cs" />
      <Compile Include="Assets\Scripts\DynamicCarModel\DynamicCarMotionModel.cs" />
@@ -62,6 +63,7 @@
      <Compile Include="Assets\Scripts\GraphBuilders\GridGraphBuilder.cs" />
      <Compile Include="Assets\Scripts\GraphBuilders\OctGridGraphBuilder.cs" />
      <Compile Include="Assets\Scripts\KinematicCarModel\KinematicCarMotionModel.cs" />
+     <Compile Include="Assets\Scripts\KinematicCarModel\KinematicCarRRT.cs" />
      <Compile Include="Assets\Scripts\KinematicModel\KinematicMotionModel.cs" />
      <Compile Include="Assets\Scripts\KinematicModel\KinematicRTTPathPlanning.cs" />
      <Compile Include="Assets\Scripts\MapReader.cs" />
@@ -69,7 +71,7 @@
      <Compile Include="Assets\Scripts\MotionModel.cs" />
      <Compile Include="Assets\Scripts\RTTTree.cs" />
  <Reference Include="UnityEngine.UI">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

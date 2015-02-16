@@ -52,7 +52,7 @@ public class DynamicRTTPathPlanning {
             return t;
         }
 
-        for(int i = 0; i<1000; i++) { // do at most 10.000 iterations
+        for(int i = 0; i<10000; i++) { // do at most 10.000 iterations
             // draw a random point
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
             // find the nearest node
