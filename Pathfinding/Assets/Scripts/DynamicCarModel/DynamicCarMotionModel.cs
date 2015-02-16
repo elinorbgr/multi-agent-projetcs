@@ -6,13 +6,10 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
 	
 	private List<Vector3> waypoints;
 	private bool moving;
-	public float speed;
 	public float maxAngle;
-	public float Force;
+	public float maxForce;
+	public float length;
 	private float distance;
-	private float delta = 0f;
-	private bool rotating;
-	public float rotationSpeed;
     public float minx;
     public float miny;
     public float maxx;
@@ -29,83 +26,86 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
 	
 	// Update is called once per frame
 	void FixedUpdate () {
-		if (delta == 0f && this.waypoints.Count != 0) {
-			distance = (this.waypoints[0] - transform.position).magnitude;		
-		}
-		delta += Time.deltaTime;
+
 		if (this.waypoints.Count == 0) {
 			moving = false;
-			rotating = false;
 			if(rigidbody.velocity.magnitude <0.2f){
 				rigidbody.velocity = new Vector3(0f,0f,0f);
-				rigidbody.angularVelocity = new Vector3(0f,0f,0f);
 				return;
 			}
-			rigidbody.AddForce(-transform.forward*(Force/rigidbody.mass));
+			rigidbody.AddForce(-transform.forward*(maxForce/rigidbody.mass));
+			return;
 		}
-		if (moving || rotating) {
-
-	
-			if ((this.waypoints [0] - rigidbody.position).magnitude < 0.7) {
-				this.delta = 0f;
+		if (moving) {
+			if ((this.waypoints [0] - rigidbody.position).magnitude < 2) {
 				this.waypoints.RemoveAt (0);
 				Object.Destroy (this.lines [0]);
 				this.lines.RemoveAt (0);
- 
-				if (this.waypoints.Count > 0) {
-					this.rotating = true;
+				if (this.waypoints.Count == 0) {
+					moving = false;
+					return;
 				}
-
 			}
 
-			}
-		if (rotating) {
-			float angle = getAngle();
-			float length = transform.lossyScale.z;
-			float turnPow = rigidbody.velocity.magnitude / length;
-			float sign = Mathf.Sign (angle);		
-			if (Mathf.Abs(angle) > rotationSpeed * Time.deltaTime) {
-				rotate(sign * rotationSpeed * Time.deltaTime*turnPow);
-				setVelocity(Force);
-				
-			} else {
-				rotate(getAngle());
-				setVelocity(Force);
-				this.rotating = false;
-				this.moving = true;
+			Vector2 u = computeU(rigidbody.position, this.waypoints[0], transform.forward, rigidbody.velocity, length, maxForce, maxAngle);
+			rotate(Mathf.Tan(u.y) * rigidbody.velocity.magnitude / length * Time.deltaTime);
+			rigidbody.AddForce(u.x * transform.forward);
 
+		} else if (rigidbody.velocity.magnitude > 0) {
+            if (rigidbody.velocity.magnitude < 0.1f) {
+                rigidbody.velocity = new Vector3(0f, 0f, 0f);
+            } else if (rigidbody.velocity.magnitude * 10 > maxForce) {
+                rigidbody.AddForce(-rigidbody.velocity.normalized * maxForce);
+            } else {
+                rigidbody.AddForce(-rigidbody.velocity * 10);
+            }
+        }
+
+	}
+
+	public static Vector2 computeU(Vector3 pos, Vector3 goal, Vector3 forward, Vector3 velocity, float length, float maxForce, float maxAngle) {
+		float angle = getAngle(pos, goal, forward);
+		float sign = Mathf.Sign (angle);
+		float phi = 0f;
+		float force = 0f;
+		if (Mathf.Cos(angle) < 0) {
+			// need to turn around
+			phi = sign * maxAngle;
+			force = - maxForce;
+		} else {
+			Vector3 targetdir = goal - pos;
+			float targetVelocity = Mathf.Sqrt(2*maxForce*targetdir.magnitude);
+			float goalPhi = Mathf.Abs(angle);
+			phi = sign * Mathf.Min(goalPhi, maxAngle);
+			force = 10 * (targetVelocity-velocity.magnitude) * Mathf.Cos(angle);
+        	if (Mathf.Abs(force) > maxForce) {
+        		force = Mathf.Sign(force) * maxForce;
+        	}
 		}
 
-			
-		}
+		if (Physics.Raycast(pos, velocity, velocity.magnitude*velocity.magnitude/maxForce/2)) {
+            // if we keep this trajectory, we'll hit a wall !
+            force = -maxForce * Mathf.Sign(force);
+        }
+
+		return new Vector2(force,phi);
 	}
 	
-	float getAngle(){
-		Vector3 targetDir = this.waypoints[0] - transform.position;
-		Vector3 forward = transform.forward;
-		float angle = Vector3.Angle(targetDir, forward);
-		float sign = Mathf.Sign(Vector3.Cross(targetDir,forward).y);
+	static float getAngle(Vector3 pos, Vector3 goal, Vector3 velocity){
+		Vector3 targetDir = goal - pos;
+		float angle = Vector3.Angle(targetDir, velocity) * Mathf.Deg2Rad;
+		float sign = Mathf.Sign(Vector3.Cross(targetDir,velocity).y);
 		return sign*angle;
-		
 	}
+
 	void rotate(float angle){
-		this.transform.Rotate (new Vector3 (0f,-angle, 0f));
+		this.transform.Rotate (new Vector3 (0f,-angle / Mathf.Deg2Rad, 0f));
+		// keep the velocity aligned
+		rigidbody.velocity = transform.forward
+								* rigidbody.velocity.magnitude
+								* Mathf.Sign(Vector3.Dot(transform.forward, rigidbody.velocity));
 	}
-	
-	void setVelocity(float addForce) {
-		float mass = rigidbody.mass;
-		Vector3 targetDir = this.waypoints[0] - transform.position;
-		rigidbody.velocity = transform.forward * rigidbody.velocity.magnitude;	
 
-		if(targetDir.magnitude > (distance/2)){
-			rigidbody.AddForce (transform.forward*(addForce/mass));
-		}
-		if(targetDir.magnitude <= (distance/2)){
-			rigidbody.AddForce (-transform.forward*(addForce/mass));
-		}
-
-
-	}
 	void displayTrajectory() {
 		foreach(GameObject o in this.lines) {
 			Object.Destroy(o);
