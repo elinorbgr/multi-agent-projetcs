@@ -81,4 +81,13 @@ public class RTTTree<T> {
         this.nodes.Add(n);
         return n;
     }
+
+    public void drawGizmos() {
+        Gizmos.color = Color.blue;
+        foreach(Node n in this.nodes) {
+            if (n.parent != null) {
+                Gizmos.DrawLine(n.pos, n.parent.pos);
+            }
+        }
+    }
 }

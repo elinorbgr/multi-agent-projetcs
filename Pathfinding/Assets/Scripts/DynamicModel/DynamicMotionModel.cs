@@ -12,6 +12,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     public float maxx;
     public float maxy;
 
+    private RTTTree<Vector3> tree;
     private List<GameObject> lines;
     
     // Use this for initialization
@@ -19,6 +20,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
         this.waypoints = new List<Vector3>();
         this.moving = false;
         this.lines = new List<GameObject>();
+        this.tree = new RTTTree<Vector3>(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
     }
 
     // Update is called once per frame
@@ -87,6 +89,10 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
         }
     }
 
+    void OnDrawGizmos() {
+        this.tree.drawGizmos();
+    }
+
     void IMotionModel.SetWaypoints(List<Vector3> newval) {
         this.waypoints = newval;
         if(this.waypoints.Count > 0) {
@@ -96,7 +102,8 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     }
 
     void IMotionModel.MoveOrder(Vector3 goal) {
-        ((IMotionModel)this).SetWaypoints(DynamicRTTPathPlanning.MoveOrder(this.transform.position, goal, this.acceleration, minx, miny, maxx, maxy));
+        this.tree = DynamicRTTPathPlanning.MoveOrder(this.transform.position, goal, this.acceleration, minx, miny, maxx, maxy);
+        ((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
     }
     
 }

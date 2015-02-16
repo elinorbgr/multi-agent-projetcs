@@ -41,7 +41,7 @@ public class DynamicRTTPathPlanning {
         return new SteerResult(start, velocity, cost, false);
     }
 
-    static public List<Vector3> MoveOrder(Vector3 start, Vector3 goal, float acc, float minx, float miny, float maxx, float maxy) {
+    static public RTTTree<Vector3> MoveOrder(Vector3 start, Vector3 goal, float acc, float minx, float miny, float maxx, float maxy) {
         // the data member of the nodes of the tree is a Vector3 : the velocity of the mobile
         // when it reached it
         RTTTree<Vector3> t = new RTTTree<Vector3>(start, new Vector3(0f, 0f, 0f));
@@ -49,10 +49,8 @@ public class DynamicRTTPathPlanning {
         if (visible(start, goal)) {
             // if the goal is visible from start, no need to think too much
             RTTTree<Vector3>.Node g = t.insert(goal, t.root, (start-goal).magnitude, new Vector3(0f,0f,0f));
-            return g.pathFromRoot();
+            return t;
         }
-
-        float baseradius = (maxx+maxy-minx-miny)/(2*5);
 
         for(int i = 0; i<1000; i++) { // do at most 10.000 iterations
             // draw a random point
@@ -69,6 +67,6 @@ public class DynamicRTTPathPlanning {
             }
         }
         // now, simple return the best path from the tree
-        return t.nearestOf(goal).pathFromRoot();
+        return t;
     }
 }

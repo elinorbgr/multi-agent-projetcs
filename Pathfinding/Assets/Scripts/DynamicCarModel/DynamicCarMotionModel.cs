@@ -15,6 +15,7 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
     public float maxx;
     public float maxy;
 	
+	private RTTTree<Vector2> tree;
 	private List<GameObject> lines;
 	
 	// Use this for initialization
@@ -22,6 +23,7 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
 		this.waypoints = new List<Vector3>();
 		this.moving = false;
 		this.lines = new List<GameObject>();
+		this.tree = new RTTTree<Vector2>(new Vector3(0f,0f,0f), new Vector2(0f,0f));
 	}
 	
 	// Update is called once per frame
@@ -47,7 +49,7 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
 				}
 			}
 
-			Vector2 u = computeU(rigidbody.position, this.waypoints[0], transform.forward, rigidbody.velocity, length, maxForce, maxAngle);
+			Vector2 u = computeU(rigidbody.position, this.waypoints[0], transform.forward, rigidbody.velocity.magnitude, length, maxForce, maxAngle);
 			rotate(Mathf.Tan(u.y) * rigidbody.velocity.magnitude / length * Time.deltaTime);
 			rigidbody.AddForce(u.x * transform.forward);
 
@@ -63,7 +65,7 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
 
 	}
 
-	public static Vector2 computeU(Vector3 pos, Vector3 goal, Vector3 forward, Vector3 velocity, float length, float maxForce, float maxAngle) {
+	public static Vector2 computeU(Vector3 pos, Vector3 goal, Vector3 forward, float velocity, float length, float maxForce, float maxAngle) {
 		float angle = getAngle(pos, goal, forward);
 		float sign = Mathf.Sign (angle);
 		float phi = 0f;
@@ -77,13 +79,13 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
 			float targetVelocity = Mathf.Sqrt(2*maxForce*targetdir.magnitude);
 			float goalPhi = Mathf.Abs(angle);
 			phi = sign * Mathf.Min(goalPhi, maxAngle);
-			force = 10 * (targetVelocity-velocity.magnitude) * Mathf.Cos(angle);
+			force = 10 * (targetVelocity-velocity) * Mathf.Cos(angle);
         	if (Mathf.Abs(force) > maxForce) {
         		force = Mathf.Sign(force) * maxForce;
         	}
 		}
 
-		if (Physics.Raycast(pos, velocity, velocity.magnitude*velocity.magnitude/maxForce/2)) {
+		if (Physics.Raycast(pos, forward, velocity*velocity/maxForce/2 + 1f)) {
             // if we keep this trajectory, we'll hit a wall !
             force = -maxForce * Mathf.Sign(force);
         }
@@ -126,6 +128,12 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
 			previous = v;
 		}
 	}
+
+	void OnDrawGizmos() {
+		if (this.tree != null) {
+			this.tree.drawGizmos();
+		}
+	}
 	
 	void IMotionModel.SetWaypoints(List<Vector3> newval) {
 		this.waypoints = newval;
@@ -136,7 +144,8 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
 	}
 	
     void IMotionModel.MoveOrder(Vector3 goal) {
-        ((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
+    	this.tree = DynamicCarRTTPathPlanning.MoveOrder(this.transform.position, goal, transform.forward, rigidbody.velocity.magnitude, maxForce, maxAngle, length, minx, miny, maxx, maxy);
+        ((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
     }
 	
 }
