@@ -90,7 +90,9 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     }
 
     void OnDrawGizmos() {
-        this.tree.drawGizmos();
+        if (this.tree != null) {
+            this.tree.drawGizmos();
+        }
     }
 
     void IMotionModel.SetWaypoints(List<Vector3> newval) {
