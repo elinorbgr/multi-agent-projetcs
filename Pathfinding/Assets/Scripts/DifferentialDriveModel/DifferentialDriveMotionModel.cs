@@ -57,11 +57,6 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
 			movSpeed = Mathf.Sign(movSpeed) * maxSpeed;
 		}
 		
-		if (Physics.Raycast(pos, forward, velocity*velocity/maxSpeed/2 + 1f)) {
-			// if we keep this trajectory, we'll hit a wall !
-			movSpeed = -maxSpeed * Mathf.Sign(movSpeed);
-		}
-		
 		return new Vector2(movSpeed,rotSpeed);
 	}
 	
@@ -99,7 +94,8 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
     
     void IMotionModel.MoveOrder(Vector3 goal) {
 		this.tree = DifferentialDriveRRT.MoveOrder(this.transform.position, goal, transform.forward, rigidbody.velocity.magnitude, maxSpeed, maxRotSpeed, length, minx, miny, maxx, maxy);
-		((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot()); 
+		((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
+        Debug.Log(this.tree.nearestOf(goal).fullCost());
 	}
     
 }

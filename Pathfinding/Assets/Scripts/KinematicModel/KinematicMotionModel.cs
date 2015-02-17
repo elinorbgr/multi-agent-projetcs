@@ -76,6 +76,7 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
     void IMotionModel.MoveOrder(Vector3 goal) {
         this.tree = KinematicRRTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy);
         ((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
+        Debug.Log(this.tree.nearestOf(goal).fullCost());
     }
     
 }

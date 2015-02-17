@@ -31,7 +31,7 @@ public class KinematicCarRRT : MonoBehaviour {
 		float step = 0.1f;
 		float cost = 0f;
 		Vector3 forward = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-		while ((start-goal).magnitude > 1 && cost < 16) {
+		while ((start-goal).magnitude > 1 && cost < 128) {
 			Vector3 nextpos = start + forward.normalized * velocity * step;
 			if(!visible(start, nextpos)) {
 				// there is a collision, stop all !
@@ -39,7 +39,7 @@ public class KinematicCarRRT : MonoBehaviour {
 			}
 			Vector2 u = KinematicCarMotionModel.computeU(start, goal, forward, velocity, length, speed, maxAngle);
 			angle += Mathf.Tan(u.y) * velocity / length * step;
-			velocity += u.x * step;
+			velocity = u.x;
 			start = nextpos;
 			forward = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
 			cost += step;
@@ -53,7 +53,7 @@ public class KinematicCarRRT : MonoBehaviour {
 		float angle = Mathf.Atan2(forward.z, forward.x);
 		RRTTree<Vector2> t = new RRTTree<Vector2>(start, new Vector2(velocity, angle));
 		
-		for(int i = 0; i<1000; i++) { // do at most 1.000 iterations
+		for(int i = 0; i<10000; i++) { // do at most 1.000 iterations
 			// draw a random point
 			Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
 			// find the nearest node

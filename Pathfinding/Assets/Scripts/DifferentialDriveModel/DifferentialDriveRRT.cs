@@ -39,7 +39,7 @@ public class DifferentialDriveRRT : MonoBehaviour {
 			}
 			Vector2 u = DifferentialDriveMotionModel.computeU(start, goal, forward, velocity, length, maxForce, maxAngle);
 			angle += u.y * step;
-			velocity += u.x * step;
+			velocity = u.x;
 			start = nextpos;
 			forward = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
 			cost += step;

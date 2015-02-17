@@ -128,6 +128,7 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
     void IMotionModel.MoveOrder(Vector3 goal) {
     	this.tree = DynamicCarRRTPathPlanning.MoveOrder(this.transform.position, goal, transform.forward, rigidbody.velocity.magnitude, maxForce, maxAngle, length, minx, miny, maxx, maxy);
         ((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
+        Debug.Log(this.tree.nearestOf(goal).fullCost());
     }
 	
 }

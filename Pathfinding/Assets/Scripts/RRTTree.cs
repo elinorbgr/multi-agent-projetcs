@@ -28,11 +28,23 @@ public class RRTTree<T> {
         }
 
         public float fullCost() {
-            if (this.parent == null) {
-                return 0.0F;
-            } else {
-                return this.parent.fullCost() + this.cost;
+            float cost = 0f;
+            Node me = this;
+            while(me.parent != null) {
+                cost += me.cost;
+                me = me.parent;
             }
+            return cost;
+        }
+
+        public bool isParentOf(Node n) {
+            while(n.parent != null) {
+                if (n.parent == this) {
+                    return true;
+                }
+                n = n.parent;
+            }
+            return false;
         }
     }
 
@@ -74,6 +86,40 @@ public class RRTTree<T> {
             }
         }
         return nearest;
+    }
+
+    public Node cheapestVisibleOf(Vector3 pos) {
+        float min_cost = float.PositiveInfinity;
+        Node cheapest = null;
+        foreach(Node n in this.nodes) {
+            float cost = (pos - n.pos).magnitude + n.fullCost();
+            if (cost < min_cost && visible(pos, n.pos)) {
+                min_cost = cost;
+                cheapest = n;
+            }
+        }
+        return cheapest;
+    }
+
+    public List<Node> visibleInRadius(Vector3 pos, float r) {
+        List<Node> lst = new List<Node>();
+        foreach(Node n in this.nodes) {
+            float dist = (pos - n.pos).magnitude;
+            if (dist <= r && visible(pos, n.pos)) {
+                lst.Add(n);
+            }
+        }
+        return lst;
+    }
+
+    public List<Node> childrenOf(Node p) {
+        List<Node> lst = new List<Node>();
+        foreach(Node n in this.nodes) {
+            if (n.parent == p) {
+                lst.Add(n);
+            }
+        }
+        return lst;
     }
 
     public Node insert(Vector3 pos, Node parent, float cost, T data) {
