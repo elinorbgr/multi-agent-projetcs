@@ -11,7 +11,7 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
     public float miny;
     public float maxx;
     public float maxy;
-    private RTTTree<Object> tree;
+    private RRTTree<Object> tree;
 
     // Use this for initialization
     void Start () {
@@ -74,7 +74,7 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
     }
 
     void IMotionModel.MoveOrder(Vector3 goal) {
-        this.tree = KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy);
+        this.tree = KinematicRRTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy);
         ((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
     }
     

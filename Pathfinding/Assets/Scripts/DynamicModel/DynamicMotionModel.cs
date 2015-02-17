@@ -12,20 +12,20 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     public float maxx;
     public float maxy;
 
-    private RTTTree<Vector3> tree;
+    private RRTTree<Vector3> tree;
     
     // Use this for initialization
     void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
-        this.tree = new RTTTree<Vector3>(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
+        this.tree = new RRTTree<Vector3>(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
     }
 
     // Update is called once per frame
     void FixedUpdate () {
         
         if (moving) {
-            if((this.waypoints[0] - rigidbody.position).magnitude <= 3f){
+            if((this.waypoints[0] - rigidbody.position).magnitude <= 1f){
                 this.waypoints.RemoveAt(0);
                 if (this.waypoints.Count == 0) {
                     moving = false;
@@ -47,7 +47,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     }
 
     // computes the acceleration given appropriate input
-    // it's a static method so it can be called from RTT
+    // it's a static method so it can be called from RRT
     public static Vector3 computeAcceleration(Vector3 pos, Vector3 velocity, Vector3 goal, float maxAccel) {
         Vector3 targetdir = goal-pos;
         Vector3 targetVelocity = Mathf.Sqrt(2*maxAccel*targetdir.magnitude) * targetdir.normalized;
@@ -86,7 +86,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     }
 
     void IMotionModel.MoveOrder(Vector3 goal) {
-        this.tree = DynamicRTTPathPlanning.MoveOrder(this.transform.position, goal, this.acceleration, minx, miny, maxx, maxy);
+        this.tree = DynamicRRTPathPlanning.MoveOrder(this.transform.position, goal, this.acceleration, minx, miny, maxx, maxy);
         ((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
     }
     

@@ -52,9 +52,9 @@
      <Compile Include="Assets\Scripts\DiscreteModel\DiscreteMotionModel.cs" />
      <Compile Include="Assets\Scripts\DiscreteModel\DiscretePathPlanning.cs" />
      <Compile Include="Assets\Scripts\DynamicCarModel\DynamicCarMotionModel.cs" />
-     <Compile Include="Assets\Scripts\DynamicCarModel\DynamicCarRTTPathPlanning.cs" />
+     <Compile Include="Assets\Scripts\DynamicCarModel\DynamicCarRRTPathPlanning.cs" />
      <Compile Include="Assets\Scripts\DynamicModel\DynamicMotionModel.cs" />
-     <Compile Include="Assets\Scripts\DynamicModel\DynamicRTTPathPlanning.cs" />
+     <Compile Include="Assets\Scripts\DynamicModel\DynamicRRTPathPlanning.cs" />
      <Compile Include="Assets\Scripts\Graph.cs" />
      <Compile Include="Assets\Scripts\GraphBuilder.cs" />
      <Compile Include="Assets\Scripts\GraphBuilders\DuodecGridGraphBulder.cs" />
@@ -65,11 +65,11 @@
      <Compile Include="Assets\Scripts\KinematicCarModel\KinematicCarMotionModel.cs" />
      <Compile Include="Assets\Scripts\KinematicCarModel\KinematicCarRRT.cs" />
      <Compile Include="Assets\Scripts\KinematicModel\KinematicMotionModel.cs" />
-     <Compile Include="Assets\Scripts\KinematicModel\KinematicRTTPathPlanning.cs" />
+     <Compile Include="Assets\Scripts\KinematicModel\KinematicRRTPathPlanning.cs" />
      <Compile Include="Assets\Scripts\MapReader.cs" />
      <Compile Include="Assets\Scripts\Misc\DiscreteTerrain.cs" />
      <Compile Include="Assets\Scripts\MotionModel.cs" />
-     <Compile Include="Assets\Scripts\RTTTree.cs" />
+     <Compile Include="Assets\Scripts\RRTTree.cs" />
  <Reference Include="UnityEngine.UI">
  <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>

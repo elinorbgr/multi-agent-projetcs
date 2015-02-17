@@ -14,13 +14,13 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
     public float maxx;
     public float maxy;
 
-	private RTTTree<Vector2> tree;
+	private RRTTree<Vector2> tree;
 
     // Use this for initialization
     void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
-		this.tree = new RTTTree<Vector2>(new Vector3(0f,0f,0f), new Vector2(0f,0f));
+		this.tree = new RRTTree<Vector2>(new Vector3(0f,0f,0f), new Vector2(0f,0f));
     }
     
     // Update is called once per frame

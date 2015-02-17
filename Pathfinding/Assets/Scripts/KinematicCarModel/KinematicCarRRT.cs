@@ -47,17 +47,17 @@ public class KinematicCarRRT : MonoBehaviour {
 		return new SteerResult(start, velocity, angle, cost, false);
 	}
 	
-	static public RTTTree<Vector2> MoveOrder(Vector3 start, Vector3 goal, Vector3 forward, float velocity, float speed, float maxAngle, float length, float minx, float miny, float maxx, float maxy) {
+	static public RRTTree<Vector2> MoveOrder(Vector3 start, Vector3 goal, Vector3 forward, float velocity, float speed, float maxAngle, float length, float minx, float miny, float maxx, float maxy) {
 		// the data member of the nodes of the tree is a Vector3 : the velocity of the mobile
 		// when it reached it
 		float angle = Mathf.Atan2(forward.z, forward.x);
-		RTTTree<Vector2> t = new RTTTree<Vector2>(start, new Vector2(velocity, angle));
+		RRTTree<Vector2> t = new RRTTree<Vector2>(start, new Vector2(velocity, angle));
 		
 		for(int i = 0; i<1000; i++) { // do at most 1.000 iterations
 			// draw a random point
 			Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
 			// find the nearest node
-			RTTTree<Vector2>.Node p = t.nearestVisibleOf(point);
+			RRTTree<Vector2>.Node p = t.nearestVisibleOf(point);
 			if (p != null) {
 				// try to simulate a move from p.pos with initial velocity p.data to point
 				SteerResult sr = steer(p.pos, point, p.data.y, p.data.x, speed, maxAngle, length);

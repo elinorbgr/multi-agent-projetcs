@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class RTTTree<T> {
+public class RRTTree<T> {
     public class Node {
         public Vector3 pos;
         public Node parent;
@@ -39,7 +39,7 @@ public class RTTTree<T> {
     public Node root;
     public List<Node> nodes;
 
-    public RTTTree(Vector3 root, T data) {
+    public RRTTree(Vector3 root, T data) {
         this.root = new Node(root, null, 0f, data);
         this.nodes = new List<Node>();
         this.nodes.Add(this.root);

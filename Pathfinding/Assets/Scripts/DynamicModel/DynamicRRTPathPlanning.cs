@@ -2,7 +2,7 @@
 using System.Collections;
 using System.Collections.Generic;
 
-public class DynamicRTTPathPlanning {
+public class DynamicRRTPathPlanning {
 
     static private bool visible(Vector3 a, Vector3 b) {
         return !( Physics.Raycast(a, b-a, (b-a).magnitude)
@@ -41,10 +41,10 @@ public class DynamicRTTPathPlanning {
         return new SteerResult(start, velocity, cost, false);
     }
 
-    static public RTTTree<Vector3> MoveOrder(Vector3 start, Vector3 goal, float acc, float minx, float miny, float maxx, float maxy) {
+    static public RRTTree<Vector3> MoveOrder(Vector3 start, Vector3 goal, float acc, float minx, float miny, float maxx, float maxy) {
         // the data member of the nodes of the tree is a Vector3 : the velocity of the mobile
         // when it reached it
-        RTTTree<Vector3> t = new RTTTree<Vector3>(start, new Vector3(0f, 0f, 0f));
+        RRTTree<Vector3> t = new RRTTree<Vector3>(start, new Vector3(0f, 0f, 0f));
 
         if (visible(start, goal)) {
             // if the goal is visible from start, no need to think too much
@@ -56,7 +56,7 @@ public class DynamicRTTPathPlanning {
             // draw a random point
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
             // find the nearest node
-            RTTTree<Vector3>.Node p = t.nearestVisibleOf(point);
+            RRTTree<Vector3>.Node p = t.nearestVisibleOf(point);
             if (p != null) {
                 // try to simulate a move from p.pos with initial velocity p.data to point
                 SteerResult sr = steer(p.pos, point, p.data, acc);
