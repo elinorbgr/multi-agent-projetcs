@@ -34,8 +34,6 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
                 this.waypoints.RemoveAt (0);
                 Object.Destroy (this.lines [0]);
                 this.lines.RemoveAt (0);
-				rotate(u.y* Time.deltaTime);
-				rigidbody.velocity = rigidbody.transform.forward*u.x*0.1f;
 				delta+=Time.deltaTime;
 				if(this.waypoints.Count == 0){
 					moving = false;
@@ -52,24 +50,29 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
         }
     }
     
-	public static Vector2 computeU(Vector3 pos, Vector3 goal, Vector3 forward, float velocity, float length,float maxSpeed, float maxRotSpeed) {
+	public static Vector2 computeU(Vector3 pos, Vector3 goal, Vector3 forward, float velocity, float length, float maxSpeed, float maxRotSpeed) {
 		float angle = getAngle(pos, goal, forward);
 		float sign = Mathf.Sign (angle);
-		float speed = 0f;
-		if (Mathf.Cos(angle) < 0) {
-			// need to turn around
-		} else {
-			Vector3 targetdir = goal - pos;
-			speed = maxSpeed;
+		float rotSpeed = 0f;
+		float movSpeed = 0f;
+
+		Vector3 targetdir = goal - pos;
+		float targetVelocity = maxSpeed;
+		float goalrotSpeed = maxRotSpeed;
+		rotSpeed = sign * Mathf.Min(goalrotSpeed, maxRotSpeed);
+		movSpeed = maxSpeed;
+		if (Mathf.Abs(movSpeed) > maxSpeed) {
+			movSpeed = Mathf.Sign(movSpeed) * maxSpeed;
 		}
 		
-		if (Physics.Raycast(pos, forward, velocity+1f)) {
+		if (Physics.Raycast(pos, forward, velocity*velocity/maxSpeed/2 + 1f)) {
 			// if we keep this trajectory, we'll hit a wall !
-			speed = -maxSpeed;
+			movSpeed = -maxSpeed * Mathf.Sign(movSpeed);
 		}
-		return new Vector2(speed,angle);
+		
+		return new Vector2(movSpeed,rotSpeed);
 	}
-
+	
 	static float getAngle(Vector3 pos, Vector3 goal, Vector3 velocity){
 		Vector3 targetDir = goal - pos;
 		float angle = Vector3.Angle(targetDir, velocity) * Mathf.Deg2Rad;
@@ -81,9 +84,6 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
 		this.transform.Rotate (new Vector3 (0f,-angle / Mathf.Deg2Rad, 0f));
     }
 
-    void setVelocity(float movespeed) {
-        rigidbody.velocity = transform.forward*movespeed;
-    }
     void displayTrajectory() {
         foreach(GameObject o in this.lines) {
             Object.Destroy(o);
@@ -119,8 +119,8 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
 	}
     
     void IMotionModel.MoveOrder(Vector3 goal) {
-		this.tree = DynamicCarRTTPathPlanning.MoveOrder(this.transform.position, goal, transform.forward, rigidbody.velocity.magnitude, maxSpeed, maxRotSpeed, length, minx, miny, maxx, maxy);
-		((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
-    }
+		this.tree = DifferentialDriveRRT.MoveOrder(this.transform.position, goal, transform.forward, rigidbody.velocity.magnitude, maxSpeed, maxRotSpeed, length, minx, miny, maxx, maxy);
+		((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot()); 
+	}
     
 }
