@@ -8,73 +8,88 @@ public class KinematicCarMotionModel : MonoBehaviour, IMotionModel {
     private bool moving;
     public float speed;
     public float maxAngle;
-	private bool rotating;
-	public float rotationSpeed;
+	public float length;
     public float minx;
     public float miny;
     public float maxx;
     public float maxy;
 
+	private RTTTree<Vector2> tree;
     private List<GameObject> lines;
     
     // Use this for initialization
     void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
-		this.rotating = false;
         this.lines = new List<GameObject>();
+		this.tree = new RTTTree<Vector2>(new Vector3(0f,0f,0f), new Vector2(0f,0f));
     }
     
     // Update is called once per frame
     void Update () {
-        if (moving || rotating) {
-            if ((this.waypoints [0] - rigidbody.position).magnitude < 0.9f) {
+        if (moving) {
+            if ((this.waypoints [0] - rigidbody.position).magnitude < 2f) {
                 this.waypoints.RemoveAt (0);
                 Object.Destroy (this.lines [0]);
                 this.lines.RemoveAt (0);
-				this.moving = false;
-				if (this.waypoints.Count > 0) {
-					this.rotating = true;
-				}
+
                 if (this.waypoints.Count == 0) {
-					rigidbody.velocity = new Vector3 (0F, 0F, 0F);
 					moving = false;
                     return;
                 } 
             }
+			Vector2 u = computeU(rigidbody.position, this.waypoints[0], transform.forward, rigidbody.velocity.magnitude, length, speed, maxAngle);
+			rotate(Mathf.Tan(u.y) * rigidbody.velocity.magnitude / length * Time.deltaTime);
+			rigidbody.velocity = u.x*transform.forward;
         }
-		if (rotating) {
-			float angle = getAngle();
-			float length = transform.lossyScale.z;
-			float turn = rigidbody.velocity.magnitude / length;
-			if (Mathf.Abs(angle) > rotationSpeed * Time.deltaTime) {
-				rotate(Mathf.Sign(angle) * rotationSpeed * Time.deltaTime*turn);
-				setVelocity(speed);
-				
-			} else {
-				rotate(getAngle());
-				setVelocity(speed);
-				this.rotating = false;
-				this.moving = true;
-			}
+		else if (rigidbody.velocity.magnitude > 0) {
+			rigidbody.velocity = new Vector3 (0F, 0F, 0F);
+			return;
 		}
     }
     
-    float getAngle(){
-        Vector3 targetDir = this.waypoints[0] - transform.position;
-        Vector3 forward = transform.forward;
-        float angle = Vector3.Angle(targetDir, forward);
-        float sign = Mathf.Sign(Vector3.Cross(targetDir,forward).y);
-        return sign*angle;
-        
-    }
-    void rotate(float angle){
-        this.transform.Rotate (new Vector3 (0f,-angle, 0f));
-    }
+	public static Vector2 computeU(Vector3 pos, Vector3 goal, Vector3 forward, float velocity, float length, float speed, float maxAngle) {
+		float angle = getAngle(pos, goal, forward);
+		float sign = Mathf.Sign (angle);
+		float phi = 0f;
+		float movSpeed = 0f;
+		if (Mathf.Cos(angle) < 0) {
+			// need to turn around
+			phi = sign * maxAngle;
+			movSpeed = - speed;
+		} else {
+			Vector3 targetdir = goal - pos;
+			float targetVelocity = speed;
+			float goalPhi = Mathf.Abs(angle);
+			phi = sign * Mathf.Min(goalPhi, maxAngle);
+			movSpeed = 10 * (targetVelocity-velocity) * Mathf.Cos(angle); // what is this?
+			if (Mathf.Abs(movSpeed) > speed) {
+				movSpeed = Mathf.Sign(movSpeed) * speed;
+			}
+		}
+		
+		if (Physics.Raycast(pos, forward, velocity + 1f)) {
+			// if we keep this trajectory, we'll hit a wall !
+			movSpeed = -speed * Mathf.Sign(movSpeed);
+		}
+		
+		return new Vector2(movSpeed,phi);
+	}
 
-    void setVelocity(float movespeed) {
-        rigidbody.velocity = transform.forward*movespeed;
-    }
+
+	static float getAngle(Vector3 pos, Vector3 goal, Vector3 velocity){
+		Vector3 targetDir = goal - pos;
+		float angle = Vector3.Angle(targetDir, velocity) * Mathf.Deg2Rad;
+		float sign = Mathf.Sign(Vector3.Cross(targetDir,velocity).y);
+		return sign*angle;
+	}  
+    
+
+	void rotate(float angle){
+		this.transform.Rotate (new Vector3 (0f,-angle / Mathf.Deg2Rad, 0f));
+	}
+
+
     void displayTrajectory() {
         foreach(GameObject o in this.lines) {
             Object.Destroy(o);
@@ -96,6 +111,12 @@ public class KinematicCarMotionModel : MonoBehaviour, IMotionModel {
         }
     }
     
+	void OnDrawGizmos() {
+		if (this.tree != null) {
+			this.tree.drawGizmos();
+		}
+	}
+
     void IMotionModel.SetWaypoints(List<Vector3> newval) {
         this.waypoints = newval;
         if(this.waypoints.Count > 0) {
@@ -105,7 +126,8 @@ public class KinematicCarMotionModel : MonoBehaviour, IMotionModel {
     }
     
     void IMotionModel.MoveOrder(Vector3 goal) {
-        ((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
-    }
+		this.tree = KinematicCarRRT.MoveOrder(this.transform.position, goal, transform.forward, rigidbody.velocity.magnitude, speed, maxAngle, length, minx, miny, maxx, maxy);
+		((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
+	}
     
 }
