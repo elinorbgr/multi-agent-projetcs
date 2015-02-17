@@ -14,13 +14,13 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
     public float maxx;
     public float maxy;
 
-	private RRTTree<Vector2> tree;
+	private RRTTree<Vector3> tree;
 
     // Use this for initialization
     void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
-		this.tree = new RRTTree<Vector2>(new Vector3(0f,0f,0f), new Vector2(0f,0f));
+		this.tree = new RRTTree<Vector3>(new Vector3(0f,0f,0f), new Vector3(0f,0f));
     }
     
     // Update is called once per frame
@@ -35,7 +35,7 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
 				}
             }
 			else{
-				rotate(u.y* Time.deltaTime);
+				if(Mathf.Abs(u.y)>0){rotate(u.y* Time.deltaTime);}
 				rigidbody.velocity = rigidbody.transform.forward*u.x;
 			}
         }
@@ -49,12 +49,24 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
 		float sign = Mathf.Sign (angle);
 		float rotSpeed = 0f;
 		float movSpeed = 0f;
-
-		float goalrotSpeed = maxRotSpeed;
-		rotSpeed = sign * Mathf.Min(goalrotSpeed, maxRotSpeed);
-		movSpeed = maxSpeed;
-		if (Mathf.Abs(movSpeed) > maxSpeed) {
-			movSpeed = Mathf.Sign(movSpeed) * maxSpeed;
+		if (Mathf.Cos(angle) < 0) {
+			// need to turn around
+			rotSpeed = sign * maxRotSpeed;
+			movSpeed = maxSpeed*Mathf.Abs( Mathf.Cos(angle));
+		} else {
+			//Vector3 targetdir = goal - pos;
+			//float targetVelocity = maxSpeed;
+			float goalrotSpeed = Mathf.Abs(angle);
+			rotSpeed = sign * Mathf.Min(goalrotSpeed, maxRotSpeed);
+			movSpeed = maxSpeed;
+			if (Mathf.Abs(movSpeed) > maxSpeed) {
+				movSpeed = Mathf.Sign(movSpeed) * maxSpeed;
+			}
+		}
+		
+		if (Physics.Raycast(pos, forward,1)) {
+			// if we keep this trajectory, we'll hit a wall !
+			movSpeed = -maxSpeed * Mathf.Sign(movSpeed);
 		}
 		
 		return new Vector2(movSpeed,rotSpeed);

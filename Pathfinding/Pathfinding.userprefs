@@ -1,10 +1,9 @@
 ﻿<Properties>
-  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" PreferredExecutionTarget="MonoDevelop.Default" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\KinematicCarModel\KinematicCarMotionModel.cs">
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\DifferentialDriveModel\DifferentialDriveRRT.cs">
     <Files>
-      <File FileName="Assets\Scripts\DynamicCarModel\DynamicCarMotionModel.cs" Line="56" Column="5" />
-      <File FileName="Assets\Scripts\KinematicCarModel\KinematicCarMotionModel.cs" Line="61" Column="23" />
-      <File FileName="Assets\Scripts\KinematicCarModel\KinematicCarRRT.cs" Line="28" Column="70" />
+      <File FileName="Assets\Scripts\DifferentialDriveModel\DifferentialDriveRRT.cs" Line="82" Column="3" />
+      <File FileName="Assets\Scripts\DifferentialDriveModel\DifferentialDriveMotionModel.cs" Line="113" Column="2" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
