@@ -27,7 +27,7 @@ public class DifferentialDriveMotionModel : MonoBehaviour, IMotionModel {
     void Update () {
         if (moving) {
 			Vector2 u = computeU(rigidbody.position, this.waypoints[0], transform.forward, rigidbody.velocity.magnitude, length,maxSpeed, maxRotSpeed);
-            if ((this.waypoints [0] - rigidbody.position).magnitude < 3f) {
+            if ((this.waypoints [0] - rigidbody.position).magnitude < maxx/100f) {
                 this.waypoints.RemoveAt (0);
 				if(this.waypoints.Count == 0){
 					moving = false;

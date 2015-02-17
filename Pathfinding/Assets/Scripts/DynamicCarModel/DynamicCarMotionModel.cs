@@ -37,7 +37,7 @@ public class DynamicCarMotionModel : MonoBehaviour, IMotionModel {
 			return;
 		}
 		if (moving) {
-			if ((this.waypoints [0] - rigidbody.position).magnitude < 2f) {
+			if ((this.waypoints [0] - rigidbody.position).magnitude < maxx/100f) {
 				this.waypoints.RemoveAt (0);
 				if (this.waypoints.Count == 0) {
 					moving = false;
