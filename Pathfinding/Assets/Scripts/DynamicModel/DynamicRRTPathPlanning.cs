@@ -74,7 +74,7 @@ public class DynamicRRTPathPlanning {
             return t;
         }
 
-        float baseradius = ((maxy-miny)+(maxx-minx))/32;
+        float baseradius = ((maxy-miny)+(maxx-minx))/16;
 
         for(int i = 0; i<2000; i++) { // do at most 10.000 iterations
             // draw a random point

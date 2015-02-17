@@ -31,7 +31,7 @@ public class DynamicCarRRTPathPlanning : MonoBehaviour {
         float step = 0.1f;
         float cost = 0f;
         Vector3 forward = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-        while ((start-goal).magnitude > 1 && cost < 16) {
+        while ((start-goal).magnitude > 1 && cost < 128) {
             Vector3 nextpos = start + forward.normalized * velocity * step;
             if(!visible(start, nextpos)) {
                 // there is a collision, stop all !
@@ -47,23 +47,54 @@ public class DynamicCarRRTPathPlanning : MonoBehaviour {
         return new SteerResult(start, velocity, angle, cost, false);
     }
 
+    static void tryToSteal(RRTTree<Vector2> t, RRTTree<Vector2>.Node n, RRTTree<Vector2>.Node me, float maxForce, float maxAngle, float length) {
+        if (n.fullCost() <= me.fullCost()) { return; }
+        SteerResult sr = steer(me.pos, n.pos, me.data.y, me.data.x, maxForce, maxAngle, length);
+        if (n.fullCost() <= (me.fullCost() + sr.cost)) { return; }
+        if (Mathf.Abs(sr.angle-n.data.y) < 2*sr.velocity/length * Mathf.Tan(maxAngle) &&
+            Mathf.Abs(sr.velocity-n.data.x) < 3*maxForce &&
+            (sr.endpos-n.pos).magnitude < 1) {
+            // near enough, we steal !
+            if (n.isParentOf(me)) {
+                Debug.Log("Auto-parenting attempted !");
+                return;
+            }
+            n.parent = me;
+            n.cost =  sr.cost;
+        } else {
+            // copy it with new speed and recurse !
+            RRTTree<Vector2>.Node m = t.insert(sr.endpos, me, sr.cost, new Vector2(sr.velocity, sr.angle));
+            /*foreach (RRTTree<Vector2>.Node c in t.childrenOf(n)) {
+                tryToSteal(t, c, m, maxForce, maxAngle, length);
+            }*/
+        }
+
+    }
+
     static public RRTTree<Vector2> MoveOrder(Vector3 start, Vector3 goal, Vector3 forward, float velocity, float maxForce, float maxAngle, float length, float minx, float miny, float maxx, float maxy) {
         // the data member of the nodes of the tree is a Vector3 : the velocity of the mobile
         // when it reached it
         float angle = Mathf.Atan2(forward.z, forward.x);
         RRTTree<Vector2> t = new RRTTree<Vector2>(start, new Vector2(velocity, angle));
 
-        for(int i = 0; i<10000; i++) { // do at most 1.000 iterations
+        float baseradius = ((maxy-miny)+(maxx-minx))/16;
+
+        for(int i = 0; i < 500; i++) { // do at most 1.000 iterations
             // draw a random point
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
             // find the nearest node
-            RRTTree<Vector2>.Node p = t.nearestVisibleOf(point);
+            RRTTree<Vector2>.Node p = t.cheapestVisibleOf(point);
             if (p != null) {
                 // try to simulate a move from p.pos with initial velocity p.data to point
                 SteerResult sr = steer(p.pos, point, p.data.y, p.data.x, maxForce, maxAngle, length);
                 if (!sr.collided) {
                     // the steering was successful (no collision with walls), we can keep the point !
-                    t.insert(sr.endpos, p, sr.cost, new Vector2(sr.velocity, sr.angle));
+                    RRTTree<Vector2>.Node me = t.insert(sr.endpos, p, sr.cost, new Vector2(sr.velocity, sr.angle));
+
+                    foreach (RRTTree<Vector2>.Node n in t.visibleInRadius(me.pos, baseradius)) {
+                        if (n == me) { continue; }
+                        tryToSteal(t, n, me, maxForce, maxAngle, length);
+                    }
                 }
             }
         }
