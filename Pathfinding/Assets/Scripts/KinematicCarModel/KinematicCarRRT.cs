@@ -31,7 +31,7 @@ public class KinematicCarRRT : MonoBehaviour {
 		float step = 0.1f;
 		float cost = 0f;
 		Vector3 forward = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-		while ((start-goal).magnitude > 1 && cost < 3) {
+		while ((start-goal).magnitude > 1 && cost < 16) {
 			Vector3 nextpos = start + forward.normalized * velocity * step;
 			if(!visible(start, nextpos)) {
 				// there is a collision, stop all !

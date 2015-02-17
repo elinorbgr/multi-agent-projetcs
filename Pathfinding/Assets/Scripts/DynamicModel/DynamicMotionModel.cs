@@ -13,13 +13,11 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
     public float maxy;
 
     private RTTTree<Vector3> tree;
-    private List<GameObject> lines;
     
     // Use this for initialization
     void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
-        this.lines = new List<GameObject>();
         this.tree = new RTTTree<Vector3>(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
     }
 
@@ -29,8 +27,6 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
         if (moving) {
             if((this.waypoints[0] - rigidbody.position).magnitude <= 3f){
                 this.waypoints.RemoveAt(0);
-                Object.Destroy(this.lines[0]);
-                this.lines.RemoveAt(0);
                 if (this.waypoints.Count == 0) {
                     moving = false;
                     return;
@@ -68,30 +64,17 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
         return velocitydiff;
     }
 
-    void displayTrajectory() {
-        foreach(GameObject o in this.lines) {
-            Object.Destroy(o);
-        }
-        this.lines.Clear();
-        Vector3 previous = this.waypoints[0];
-        foreach(Vector3 v in this.waypoints) {
-            GameObject line = new GameObject();
-            this.lines.Add(line);
-            LineRenderer line_renderer = line.AddComponent<LineRenderer>();
-            line_renderer.useWorldSpace = true;
-            line_renderer.material = new Material(Shader.Find("Sprites/Default"));
-            line_renderer.SetColors(Color.red, Color.red);
-            line_renderer.SetVertexCount(2);
-            line_renderer.SetPosition(0, previous);
-            line_renderer.SetPosition(1, v);
-            line_renderer.SetWidth(0.1F, 0.1F);
-            previous = v;
-        }
-    }
-
     void OnDrawGizmos() {
         if (this.tree != null) {
             this.tree.drawGizmos();
+        }
+        if(this.waypoints != null && this.waypoints.Count > 0) {
+            Gizmos.color = Color.red;
+            Vector3 previous= rigidbody.position;
+            foreach (Vector3 v in this.waypoints) {
+                Gizmos.DrawLine(previous, v);
+                previous = v;
+            }
         }
     }
 
@@ -99,7 +82,6 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
         this.waypoints = newval;
         if(this.waypoints.Count > 0) {
             this.moving = true;
-            displayTrajectory();
         }
     }
 

@@ -7,14 +7,15 @@ using System.Text.RegularExpressions;
 public class MapReader : MonoBehaviour {
 	
 	private string[] map;
-	public List<Vector3> vertices;
+	private List<Vector3> vertices;
 	public GameObject Mobile;
+    public GameObject Goal;
 	private Vector3 p1;
 	private Vector3 p2;
 	
 	string[] readFile(string file){
 		string text = System.IO.File.ReadAllText(file);
-		string[] lines = Regex.Split(text,"\r\n");
+		string[] lines = Regex.Split(text,"\n");
 		return lines;
 	}
 	
@@ -44,9 +45,10 @@ public class MapReader : MonoBehaviour {
 	}
 	
 	void Start(){
-		map = readFile ("output.txt");
-		
+		map = readFile ("Assets\\map_2.txt");
 		Mobile.transform.position = new Vector3 (Single.Parse (map[1]), 0.5f, Single.Parse(map[2]));
+        Goal.transform.position = new Vector3 (Single.Parse (map[4]), 0.5f, Single.Parse(map[5]));
+        vertices = new List<Vector3>();
 		for(int i = 6; i < map.Length-1;i+=2){
 			if(map[i] == "End"){
 				makeWalls(vertices);

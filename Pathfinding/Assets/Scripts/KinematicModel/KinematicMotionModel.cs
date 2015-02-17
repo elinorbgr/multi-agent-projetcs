@@ -11,14 +11,12 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
     public float miny;
     public float maxx;
     public float maxy;
-
-    private List<GameObject> lines;
+    private RTTTree<Object> tree;
 
     // Use this for initialization
     void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
-        this.lines = new List<GameObject>();
     }
 
     static private bool visible(Vector3 a, Vector3 b) {
@@ -34,8 +32,6 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
 
                 do {
                     this.waypoints.RemoveAt(0);
-                    Object.Destroy(this.lines[0]);
-                    this.lines.RemoveAt(0);
                 } while (this.waypoints.Count > 1 && visible(rigidbody.position, this.waypoints[1]));
 
                 if (this.waypoints.Count == 0) {
@@ -55,24 +51,17 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
         rigidbody.velocity = direction*speed;
     }
 
-    void displayTrajectory() {
-        foreach(GameObject o in this.lines) {
-            Object.Destroy(o);
+    void OnDrawGizmos() {
+        if (this.tree != null) {
+            this.tree.drawGizmos();
         }
-        this.lines.Clear();
-        Vector3 previous = this.waypoints[0];
-        foreach(Vector3 v in this.waypoints) {
-            GameObject line = new GameObject();
-            this.lines.Add(line);
-            LineRenderer line_renderer = line.AddComponent<LineRenderer>();
-            line_renderer.useWorldSpace = true;
-            line_renderer.material = new Material(Shader.Find("Sprites/Default"));
-            line_renderer.SetColors(Color.red, Color.red);
-            line_renderer.SetVertexCount(2);
-            line_renderer.SetPosition(0, previous);
-            line_renderer.SetPosition(1, v);
-            line_renderer.SetWidth(0.1F, 0.1F);
-            previous = v;
+        if(this.waypoints != null && this.waypoints.Count > 0) {
+            Gizmos.color = Color.red;
+            Vector3 previous= rigidbody.position;
+            foreach (Vector3 v in this.waypoints) {
+                Gizmos.DrawLine(previous, v);
+                previous = v;
+            }
         }
     }
 
@@ -81,12 +70,12 @@ public class KinematicMotionModel : MonoBehaviour, IMotionModel {
         if(this.waypoints.Count > 0) {
             this.moving = true;
             this.setVelocity();
-            displayTrajectory();
         }
     }
 
     void IMotionModel.MoveOrder(Vector3 goal) {
-        ((IMotionModel)this).SetWaypoints(KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy));
+        this.tree = KinematicRTTPathPlanning.MoveOrder(this.transform.position, goal, minx, miny, maxx, maxy);
+        ((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
     }
     
 }

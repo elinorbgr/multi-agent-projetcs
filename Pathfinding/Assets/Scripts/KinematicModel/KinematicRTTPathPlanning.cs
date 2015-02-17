@@ -9,14 +9,14 @@ public class KinematicRTTPathPlanning {
                 || Physics.Raycast(b, a-b, (a-b).magnitude));
     }
 
-    static public List<Vector3> MoveOrder(Vector3 start, Vector3 goal, float minx, float miny, float maxx, float maxy) {
+    static public RTTTree<Object> MoveOrder(Vector3 start, Vector3 goal, float minx, float miny, float maxx, float maxy) {
 
         RTTTree<Object> t = new RTTTree<Object>(start, null);
 
         if (visible(start, goal)) {
             RTTTree<Object>.Node g = new RTTTree<Object>.Node(goal, t.root, (goal-start).magnitude, null);
             t.nodes.Add(g);
-            return g.pathFromRoot();
+            return t;
         }
 
         float baseradius = (maxx+maxy-minx-miny)/(2*5);
@@ -44,6 +44,6 @@ public class KinematicRTTPathPlanning {
                 }
             }
         }
-        return t.nearestOf(goal).pathFromRoot();
+        return t;
     }
 }

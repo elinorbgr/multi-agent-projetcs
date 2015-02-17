@@ -28,7 +28,7 @@ public class DynamicRTTPathPlanning {
     static SteerResult steer(Vector3 start, Vector3 goal, Vector3 velocity, float acc) {
         float step = 0.1f;
         float cost = 0f;
-        while ((start-goal).magnitude > 1 || cost < 3) {
+        while ((start-goal).magnitude > 1 && cost < 16) {
             Vector3 nextpos = start + velocity * step;
             if(!visible(start, nextpos)) {
                 // there is a collision, stop all !
@@ -48,7 +48,7 @@ public class DynamicRTTPathPlanning {
 
         if (visible(start, goal)) {
             // if the goal is visible from start, no need to think too much
-            RTTTree<Vector3>.Node g = t.insert(goal, t.root, (start-goal).magnitude, new Vector3(0f,0f,0f));
+            t.insert(goal, t.root, (start-goal).magnitude, new Vector3(0f,0f,0f));
             return t;
         }
 
