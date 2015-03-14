@@ -31,7 +31,7 @@ public class KinematicCarRRT : MonoBehaviour {
 		float step = 0.1f;
 		float cost = 0f;
 		Vector3 forward = new Vector3(Mathf.Cos(angle), 0f, Mathf.Sin(angle));
-		while ((start-goal).magnitude > 1 && cost < 128) {
+		while ((start-goal).magnitude > 1 && cost < 256) {
 			Vector3 nextpos = start + forward.normalized * velocity * step;
 			if(!visible(start, nextpos)) {
 				// there is a collision, stop all !
@@ -51,7 +51,7 @@ public class KinematicCarRRT : MonoBehaviour {
 		SteerResult sr = steer(me.pos, n.pos, me.data.y, me.data.x, maxSpeed, maxAngle, length);
 		if (n.fullCost() <= (me.fullCost() + sr.cost)) { return; }
 		if (Mathf.Abs(sr.angle-n.data.y) < 2*sr.velocity/length * Mathf.Tan(maxAngle) &&
-		    Mathf.Abs(sr.velocity-n.data.x) < 3*maxSpeed &&
+		    Mathf.Abs(sr.velocity-n.data.x) < 3 &&
 		    (sr.endpos-n.pos).magnitude < 1) {
 			// near enough, we steal !
 			if (n.isParentOf(me)) {
@@ -78,7 +78,7 @@ public class KinematicCarRRT : MonoBehaviour {
 		
 		float baseradius = ((maxy-miny)+(maxx-minx))/16;
 		
-		for(int i = 0; i < 500; i++) { // do at most 1.000 iterations
+		for(int i = 0; i < 1000; i++) { // do at most 1.000 iterations
 			// draw a random point
 			Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
 			// find the nearest node
@@ -90,10 +90,10 @@ public class KinematicCarRRT : MonoBehaviour {
 					// the steering was successful (no collision with walls), we can keep the point !
 					RRTTree<Vector2>.Node me = t.insert(sr.endpos, p, sr.cost, new Vector2(sr.velocity, sr.angle));
 					
-					foreach (RRTTree<Vector2>.Node n in t.visibleInRadius(me.pos, baseradius)) {
+					/*foreach (RRTTree<Vector2>.Node n in t.visibleInRadius(me.pos, baseradius)) {
 						if (n == me) { continue; }
 						tryToSteal(t, n, me, maxSpeed, maxAngle, length);
-					}
+					}*/
 				}
 			}
 		}

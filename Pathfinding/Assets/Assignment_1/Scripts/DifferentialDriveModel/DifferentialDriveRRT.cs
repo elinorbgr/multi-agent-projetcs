@@ -61,9 +61,9 @@ public class DifferentialDriveRRT : MonoBehaviour {
 		} else {
 			// copy it with new speed and recurse !
 			RRTTree<Vector3>.Node m = t.insert(sr.endpos, me, sr.cost, me.data);
-			foreach (RRTTree<Vector3>.Node c in t.childrenOf(n)) {
+			/*foreach (RRTTree<Vector3>.Node c in t.childrenOf(n)) {
 				tryToSteal(t, c, m, maxSpeed,maxRotSpeed,length);
-			}
+			}*/
 		}
 		
 	}
@@ -92,10 +92,10 @@ public class DifferentialDriveRRT : MonoBehaviour {
 					// the steering was successful (no collision with walls), we can keep the point !
 					RRTTree<Vector3>.Node me = t.insert(sr.endpos, p, sr.cost, p.data);
 					// steal neighbors
-					foreach (RRTTree<Vector3>.Node n in t.visibleInRadius(me.pos, baseradius)) {
+					/*foreach (RRTTree<Vector3>.Node n in t.visibleInRadius(me.pos, baseradius)) {
 						if (n == me) { continue; }
 						tryToSteal(t, n, me, me.data.x ,me.data.y ,length);
-					}
+					}*/
 				}
 			}
 		}

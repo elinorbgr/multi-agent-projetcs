@@ -64,9 +64,9 @@ public class DynamicCarRRTPathPlanning : MonoBehaviour {
         } else {
             // copy it with new speed and recurse !
             RRTTree<Vector2>.Node m = t.insert(sr.endpos, me, sr.cost, new Vector2(sr.velocity, sr.angle));
-            /*foreach (RRTTree<Vector2>.Node c in t.childrenOf(n)) {
+            foreach (RRTTree<Vector2>.Node c in t.childrenOf(n)) {
                 tryToSteal(t, c, m, maxForce, maxAngle, length);
-            }*/
+            }
         }
 
     }
@@ -79,7 +79,7 @@ public class DynamicCarRRTPathPlanning : MonoBehaviour {
 
         float baseradius = ((maxy-miny)+(maxx-minx))/16;
 
-        for(int i = 0; i < 500; i++) { // do at most 1.000 iterations
+        for(int i = 0; i < 300; i++) { // do at most 1.000 iterations
             // draw a random point
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
             // find the nearest node

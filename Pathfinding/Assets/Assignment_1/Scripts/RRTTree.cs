@@ -101,6 +101,19 @@ public class RRTTree<T> {
         return cheapest;
     }
 
+    public Node cheapestInRadius(Vector3 pos, float r) {
+        float min_cost = float.PositiveInfinity;
+        Node cheapest = null;
+        foreach(Node n in this.visibleInRadius(pos, r)) {
+            float cost = n.fullCost();
+            if (cost < min_cost && visible(pos, n.pos)) {
+                min_cost = cost;
+                cheapest = n;
+            }
+        }
+        return cheapest;
+    }
+
     public List<Node> visibleInRadius(Vector3 pos, float r) {
         List<Node> lst = new List<Node>();
         foreach(Node n in this.nodes) {

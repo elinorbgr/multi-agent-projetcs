@@ -87,7 +87,7 @@ public class DynamicMotionModel : MonoBehaviour, IMotionModel {
 
     void IMotionModel.MoveOrder(Vector3 goal) {
         this.tree = DynamicRRTPathPlanning.MoveOrder(this.transform.position, goal, this.acceleration, minx, miny, maxx, maxy);
-        ((IMotionModel)this).SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());
+        ((IMotionModel)this).SetWaypoints(this.tree.cheapestInRadius(goal,5).pathFromRoot());
         Debug.Log(this.tree.nearestOf(goal).fullCost());
     }
     
