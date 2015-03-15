@@ -45,26 +45,30 @@ public class Poly1 : MonoBehaviour {
 	}
 	
 	void Start(){
-		map = readFile ("Assets\\map_2.txt");
+		map = readFile ("Assets\\polygObst.txt");
 		float vehicles = Single.Parse(map [0]);
 		float customers = Single.Parse(map [1]);
 		int startCount = 2+3 * (int)(2*vehicles + customers);
-		print (vehicles);
-		print (customers);
-		print (startCount);
+		print ("map length = "+map.Length);
+
 		//Mobile.transform.position = new Vector3 (Single.Parse (map[1]), 0.5f, Single.Parse(map[2]));
 		//Goal.transform.position = new Vector3 (Single.Parse (map[4]), 0.5f, Single.Parse(map[5]));
 		vertices = new List<Vector3>();
-		for(int i = startCount; i < map.Length-1;i+=2){
+		for(int i = startCount; i < map.Length;i+=2){
+			print ("i = "+i);
 			if(map[i] == "End\r"){
+				print ("Hit an END");
 				makeWalls(vertices);
 				vertices = new List<Vector3>();
 				i++;
 			}
-			if(i == map.Length-1){return;}
-			if(map[i+1] != "End\r" && map[i] != "End\r"){
+			if(i == map.Length-1){
+				print ("done");
+				return;}
+			if(map[i+1] != "End\r"){
 				vertices.Add(new Vector3(Single.Parse(map[i]),0.5f,Single.Parse(map[i+1])));
 			}
+
 			
 		}
 	}
