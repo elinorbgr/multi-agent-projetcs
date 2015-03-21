@@ -25,6 +25,18 @@ public class Graph {
 		nodes = new List<Node>();
 	}
 
+	public Node NearestNodeOf(Vector3 pos) {
+		Node best_n = null;
+		float best_d = float.PositiveInfinity;
+		foreach (Node n in this.nodes) {
+			if ((n.pos - pos).magnitude < best_d) {
+				best_d = (n.pos - pos).magnitude;
+				best_n = n;
+			}
+		}
+		return best_n;
+	}
+
 	public void CreateDisplayers() {
 		foreach (Node n in this.nodes) {
 			GameObject sphere = GameObject.CreatePrimitive(PrimitiveType.Sphere);

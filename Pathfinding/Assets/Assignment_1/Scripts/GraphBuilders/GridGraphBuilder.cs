@@ -11,7 +11,7 @@ public class GridGraphBuilder: MonoBehaviour, IGraphBuilder {
 	public float right;
 	
 	// Use this for initialization
-	void Start () {
+	void Awake () {
 		g = new Graph();
 		
 		for(float i = top; i <= bottom; i += space){
