@@ -56,6 +56,7 @@
      <Compile Include="Assets\Assignment2\Scripts\ResMapBuilder.cs" />
      <Compile Include="Assets\Assignment2\Scripts\ReservationMap.cs" />
      <Compile Include="Assets\Assignment2\Scripts\SynchroStart.cs" />
+     <Compile Include="Assets\Assignment2\Scripts\T4\VehicleAvoidanceNoObstaclesDynamicPoint.cs" />
      <Compile Include="Assets\Assignment_1\Scripts\CameraController.cs" />
      <Compile Include="Assets\Assignment_1\Scripts\DifferentialDriveModel\DifferentialDriveMotionModel.cs" />
      <Compile Include="Assets\Assignment_1\Scripts\DifferentialDriveModel\DifferentialDriveRRT.cs" />
