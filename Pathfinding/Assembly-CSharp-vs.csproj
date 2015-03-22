@@ -46,13 +46,15 @@
 	</Reference>
   </ItemGroup>
   <ItemGroup>
+     <Compile Include="Assets\Assignment2\Scripts\AStar\GeneticSTASMobile.cs" />
+     <Compile Include="Assets\Assignment2\Scripts\AStar\GeneticSpaceTimeAstar.cs" />
+     <Compile Include="Assets\Assignment2\Scripts\AStar\SpaceTimeAStar.cs" />
      <Compile Include="Assets\Assignment2\Scripts\CameraSynchroStarter.cs" />
      <Compile Include="Assets\Assignment2\Scripts\MapBuilders\Discrete1.cs" />
      <Compile Include="Assets\Assignment2\Scripts\MapBuilders\Discrete2.cs" />
      <Compile Include="Assets\Assignment2\Scripts\MapBuilders\Poly1.cs" />
      <Compile Include="Assets\Assignment2\Scripts\ResMapBuilder.cs" />
      <Compile Include="Assets\Assignment2\Scripts\ReservationMap.cs" />
-     <Compile Include="Assets\Assignment2\Scripts\SpaceTimeAStar.cs" />
      <Compile Include="Assets\Assignment2\Scripts\SynchroStart.cs" />
      <Compile Include="Assets\Assignment_1\Scripts\CameraController.cs" />
      <Compile Include="Assets\Assignment_1\Scripts\DifferentialDriveModel\DifferentialDriveMotionModel.cs" />

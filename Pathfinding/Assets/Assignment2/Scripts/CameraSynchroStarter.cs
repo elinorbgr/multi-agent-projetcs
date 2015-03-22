@@ -7,7 +7,7 @@ public class CameraSynchroStarter : MonoBehaviour {
 	// Use this for initialization
     bool leftClickFlag = true;
     
-    public List<GameObject> mobiles;
+    public List<GameObject> objects;
     
     void Start()
     {
@@ -21,16 +21,16 @@ public class CameraSynchroStarter : MonoBehaviour {
         
         if (!Input.GetKey(KeyCode.Mouse0) && !leftClickFlag)
         {
-            foreach(GameObject g in this.mobiles) {
+            leftClickFlag = true;
+            foreach(GameObject g in this.objects) {
                 ISynchroStart a = (ISynchroStart) g.GetComponent(typeof(ISynchroStart));
                 a.prepare();
             }
-            foreach(GameObject g in this.mobiles) {
+            foreach(GameObject g in this.objects) {
                 ISynchroStart a = (ISynchroStart) g.GetComponent(typeof(ISynchroStart));
                 a.act();
             }
-            this.mobiles.Clear();
-            leftClickFlag = true;
+            this.objects.Clear();
         }
     }
 }

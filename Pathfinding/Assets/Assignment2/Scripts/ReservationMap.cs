@@ -57,25 +57,21 @@ public class ReservationMap {
     }
 
     public void reserveMove(Graph.Node from, Graph.Node to, uint time) {
-        Debug.Log("Reserving from " + from.pos + " to " + to.pos + " at time " + time);
         if (time > maxtime) { maxtime = time; }
         this.reservations[new Entry(from, time)] = true;
         this.reservations[new Entry(to, time)] = true;
     }
 
     public void reserveLocation(Graph.Node at, uint time) {
-        Debug.Log("Reserving " + at.pos + " at time " + time);
         if (time > maxtime) { maxtime = time; }
         this.reservations[new Entry(at, time)] = true;
     }
     public void unreserveLocation(Graph.Node at, uint time) {
-        Debug.Log("Unreserving " + at.pos + " at time " + time);
         if (time > maxtime) { maxtime = time; }
         this.reservations[new Entry(at, time)] = false;
     }
 
     public void reserveForever(Graph.Node at, uint since) {
-        Debug.Log("Reserving " + at.pos + " since time " + since);
         if (since > maxtime) { maxtime = since; }
         this.reserved_since[at] = since;
     }

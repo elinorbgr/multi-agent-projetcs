@@ -19,7 +19,7 @@ public class SpaceTimeAStar : MonoBehaviour, ISynchroStart {
 	void Start () {
         this.waypoints = new List<Vector3>();
         this.moving = false;
-        this.delta = -2.0f;
+        this.delta = -1.0f;
         ResMapBuilder builder = (ResMapBuilder) reserver.GetComponent(typeof(ResMapBuilder));
         this.reservations = builder.getMap();
 	}
@@ -64,15 +64,22 @@ public class SpaceTimeAStar : MonoBehaviour, ISynchroStart {
             this.reservations.graph.NearestNodeOf(transform.position),
             1
         );
-        Debug.Log(name);
-        this.waypoints = spaceTimeAStar(
+        List<Graph.Node> nds = spaceTimeAStar(
             this.reservations.graph.NearestNodeOf(transform.position),
-            this.reservations.graph.NearestNodeOf(goal.transform.position)
+            this.reservations.graph.NearestNodeOf(goal.transform.position),
+            this.reservations,
+            0
         );
+        this.waypoints.Clear();
+        foreach (Graph.Node n in nds) {
+            this.waypoints.Add(n.pos);
+        }
         this.moving = true;
     }
 
     void ISynchroStart.prepare() {
+        ResMapBuilder builder = (ResMapBuilder) reserver.GetComponent(typeof(ResMapBuilder));
+        this.reservations = builder.getMap();
         this.reservations.reserveLocation(
             this.reservations.graph.NearestNodeOf(transform.position),
             0
@@ -83,11 +90,11 @@ public class SpaceTimeAStar : MonoBehaviour, ISynchroStart {
         );
     }
 
-    private List<Vector3> spaceTimeAStar(Graph.Node start, Graph.Node goal) {
+    static public List<Graph.Node> spaceTimeAStar(Graph.Node start, Graph.Node goal, R reservations, uint starting_time) {
         // init
         HashSet<R.Entry> closedset = new HashSet<R.Entry>();
         HashSet<R.Entry> openset = new HashSet<R.Entry>();
-        R.Entry beginning = new R.Entry(start, 0);
+        R.Entry beginning = new R.Entry(start, starting_time);
         openset.Add(beginning);
         Dictionary<R.Entry, R.Entry> came_from = new Dictionary<R.Entry, R.Entry>();
         Dictionary<R.Entry, float> g_score = new Dictionary<R.Entry, float>();
@@ -106,16 +113,16 @@ public class SpaceTimeAStar : MonoBehaviour, ISynchroStart {
                 }
             }
             // stop ?
-            if (current.node == goal && this.reservations.isFutureProof(current)) {
+            if (current.node == goal && reservations.isFutureProof(current)) {
                 // Okay, no one will pass, we can stay here
-                List<Vector3> path = new List<Vector3>();
-                path.Add(current.node.pos);
-                this.reservations.reserveForever(current.node, current.time);
+                List<Graph.Node> path = new List<Graph.Node>();
+                path.Add(current.node);
+                reservations.reserveForever(current.node, current.time);
                 R.Entry old = current;
                 while (came_from.ContainsKey(current)) {
                     current = came_from[current];
-                    path.Add(current.node.pos);
-                    this.reservations.reserveMove(current.node, old.node, old.time);
+                    path.Add(current.node);
+                    reservations.reserveMove(current.node, old.node, old.time);
                     old = current;
                 }
                 path.Reverse();
@@ -127,7 +134,7 @@ public class SpaceTimeAStar : MonoBehaviour, ISynchroStart {
             foreach (Graph.Node n in current.node.neighbors) {
                 R.Entry e = new R.Entry(n, current.time+1);
                 if (closedset.Contains(e)) { continue; }
-                if (!this.reservations.isFree(e)) { continue; }
+                if (!reservations.isFree(e)) { continue; }
                 float tentative_g_score = g_score[current] + 1;
 
                 if (!openset.Contains(e) || tentative_g_score < g_score[e]) {
@@ -140,7 +147,7 @@ public class SpaceTimeAStar : MonoBehaviour, ISynchroStart {
             // also try not moving
             {
                 R.Entry e = new R.Entry(current.node, current.time+1);
-                if ((!closedset.Contains(e)) && this.reservations.isFree(e))
+                if ((!closedset.Contains(e)) && reservations.isFree(e))
                 {
                     float tentative_g_score = g_score[current] + 1;
 
@@ -154,6 +161,6 @@ public class SpaceTimeAStar : MonoBehaviour, ISynchroStart {
             }
         }
 
-        return new List<Vector3>();
+        return new List<Graph.Node>();
     }
 }

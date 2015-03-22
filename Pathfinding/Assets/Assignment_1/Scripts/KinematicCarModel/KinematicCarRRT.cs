@@ -62,7 +62,7 @@ public class KinematicCarRRT : MonoBehaviour {
 			n.cost =  sr.cost;
 		} else {
 			// copy it with new speed and recurse !
-			RRTTree<Vector2>.Node m = t.insert(sr.endpos, me, sr.cost, new Vector2(sr.velocity, sr.angle));
+			/*RRTTree<Vector2>.Node m =*/ t.insert(sr.endpos, me, sr.cost, new Vector2(sr.velocity, sr.angle));
 			/*foreach (RRTTree<Vector2>.Node c in t.childrenOf(n)) {
                 tryToSteal(t, c, m, maxSpeed, maxAngle, length);
             }*/
@@ -76,7 +76,7 @@ public class KinematicCarRRT : MonoBehaviour {
 		float angle = Mathf.Atan2(forward.z, forward.x);
 		RRTTree<Vector2> t = new RRTTree<Vector2>(start, new Vector2(velocity, angle));
 		
-		float baseradius = ((maxy-miny)+(maxx-minx))/16;
+		//float baseradius = ((maxy-miny)+(maxx-minx))/16;
 		
 		for(int i = 0; i < 1000; i++) { // do at most 1.000 iterations
 			// draw a random point
@@ -88,7 +88,7 @@ public class KinematicCarRRT : MonoBehaviour {
 				SteerResult sr = steer(p.pos, point, p.data.y, p.data.x, maxSpeed, maxAngle, length);
 				if (!sr.collided) {
 					// the steering was successful (no collision with walls), we can keep the point !
-					RRTTree<Vector2>.Node me = t.insert(sr.endpos, p, sr.cost, new Vector2(sr.velocity, sr.angle));
+					/*RRTTree<Vector2>.Node me =*/ t.insert(sr.endpos, p, sr.cost, new Vector2(sr.velocity, sr.angle));
 					
 					/*foreach (RRTTree<Vector2>.Node n in t.visibleInRadius(me.pos, baseradius)) {
 						if (n == me) { continue; }

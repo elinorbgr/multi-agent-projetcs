@@ -60,7 +60,7 @@ public class DifferentialDriveRRT : MonoBehaviour {
 			n.cost =  sr.cost;
 		} else {
 			// copy it with new speed and recurse !
-			RRTTree<Vector3>.Node m = t.insert(sr.endpos, me, sr.cost, me.data);
+			/*RRTTree<Vector3>.Node m = */t.insert(sr.endpos, me, sr.cost, me.data);
 			/*foreach (RRTTree<Vector3>.Node c in t.childrenOf(n)) {
 				tryToSteal(t, c, m, maxSpeed,maxRotSpeed,length);
 			}*/
@@ -78,7 +78,7 @@ public class DifferentialDriveRRT : MonoBehaviour {
 			t.insert(goal, t.root, (start-goal).magnitude, new Vector3(0f,0f,0f));
 			return t;
 		}
-		float baseradius = ((maxy-miny)+(maxx-minx))/32;
+		//float baseradius = ((maxy-miny)+(maxx-minx))/32;
 
 		for(int i = 0; i<1000; i++) { // do at most 1.000 iterations
 			// draw a random point
@@ -90,7 +90,7 @@ public class DifferentialDriveRRT : MonoBehaviour {
 				SteerResult sr = steer(p.pos, point, p.data.y, p.data.x, maxSpeed, maxRotSpeed, length);
 				if (!sr.collided) {
 					// the steering was successful (no collision with walls), we can keep the point !
-					RRTTree<Vector3>.Node me = t.insert(sr.endpos, p, sr.cost, p.data);
+					/*RRTTree<Vector3>.Node me =*/ t.insert(sr.endpos, p, sr.cost, p.data);
 					// steal neighbors
 					/*foreach (RRTTree<Vector3>.Node n in t.visibleInRadius(me.pos, baseradius)) {
 						if (n == me) { continue; }
