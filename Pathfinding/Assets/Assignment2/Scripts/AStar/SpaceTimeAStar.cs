@@ -43,7 +43,7 @@ public class SpaceTimeAStar : MonoBehaviour, ISynchroStart {
     
     }
 
-    static float distance(Graph.Node a, Graph.Node b) {
+    public static float distance(Graph.Node a, Graph.Node b) {
         return (a.pos - b.pos).magnitude;
     }
 
@@ -74,6 +74,7 @@ public class SpaceTimeAStar : MonoBehaviour, ISynchroStart {
         foreach (Graph.Node n in nds) {
             this.waypoints.Add(n.pos);
         }
+        Debug.Log(this.waypoints.Count);
         this.moving = true;
     }
 
