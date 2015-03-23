@@ -147,18 +147,16 @@ public class GAlgorithm : MonoBehaviour {
 		paths = new List<List<Vector3>> ();
 		for(int x=0;x<mobiles.Length;x++){paths.Add(new List<Vector3>());}
 
-//		int st = 0;
-//		int end = 0;
-//		for(int i=0;i<mobiles.Length;i++){
-//			st = end;
-//			end = end + bestSol[i+num_nodes];
-//			for(int j=st;j<=end;j++){
-//				paths[i].Add(customers[bestSol[j]-1].transform.position);
-//			}
-//			((IMotionModel) this.mobiles[i].GetComponent(typeof(IMotionModel))).SetWaypoints(paths[i]);
-//		}
-
-		for(int i=0;i<mobiles.Length;i++){mobiles[i].rigidbody.AddForce(mobiles[i].transform.forward*10f);}
+		int st = 0;
+		int end = 0;
+		for(int i=0;i<mobiles.Length;i++){
+			st = end;
+			end = end + bestSol[i+num_nodes];
+			for(int j=st;j<=end;j++){
+				paths[i].Add(customers[bestSol[j]-1].transform.position);
+			}
+			((IMotionModel) this.mobiles[i].GetComponent(typeof(IMotionModel))).SetWaypoints(paths[i]);
+		}
 
 		print ("value = "+bestVal);
 		string chi = "";

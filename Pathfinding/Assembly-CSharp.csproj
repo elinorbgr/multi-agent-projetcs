@@ -39,10 +39,10 @@
 	<Reference Include="System.Core" />
 	<Reference Include="System.Xml.Linq" />
 	<Reference Include="UnityEngine">
-	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEngine.dll</HintPath>
 	</Reference>
 	<Reference Include="UnityEditor">
-	  <HintPath>C:/Program Files/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
+	  <HintPath>C:/Program Files (x86)/Unity/Editor/Data/Managed/UnityEditor.dll</HintPath>
 	</Reference>
   </ItemGroup>
   <ItemGroup>
@@ -50,6 +50,7 @@
      <Compile Include="Assets\Assignment2\Scripts\AStar\GeneticSpaceTimeAstar.cs" />
      <Compile Include="Assets\Assignment2\Scripts\AStar\SpaceTimeAStar.cs" />
      <Compile Include="Assets\Assignment2\Scripts\CameraSynchroStarter.cs" />
+     <Compile Include="Assets\Assignment2\Scripts\GAlgorithm.cs" />
      <Compile Include="Assets\Assignment2\Scripts\MapBuilders\Discrete1.cs" />
      <Compile Include="Assets\Assignment2\Scripts\MapBuilders\Discrete2.cs" />
      <Compile Include="Assets\Assignment2\Scripts\MapBuilders\Poly1.cs" />
@@ -66,6 +67,7 @@
      <Compile Include="Assets\Assignment2\Scripts\T7\DynamicCarFollower.cs" />
      <Compile Include="Assets\Assignment2\Scripts\T7\DynamicPointFollower.cs" />
      <Compile Include="Assets\Assignment2\Scripts\T7\KinematicCarFollower.cs" />
+     <Compile Include="Assets\Assignment2\Scripts\VisibilityGraph.cs" />
      <Compile Include="Assets\Assignment_1\Scripts\CameraController.cs" />
      <Compile Include="Assets\Assignment_1\Scripts\DifferentialDriveModel\DifferentialDriveMotionModel.cs" />
      <Compile Include="Assets\Assignment_1\Scripts\DifferentialDriveModel\DifferentialDriveRRT.cs" />
@@ -94,7 +96,7 @@
      <None Include="Assets\Assignment2\polygObst.txt" />
      <None Include="Assets\polygObst.txt" />
  <Reference Include="UnityEngine.UI">
- <HintPath>C:/Program Files/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
+ <HintPath>C:/Program Files (x86)/Unity/Editor/Data/UnityExtensions/Unity/GUISystem/4.6.1/UnityEngine.UI.dll</HintPath>
  </Reference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
