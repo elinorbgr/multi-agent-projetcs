@@ -19,8 +19,11 @@ public class KinematicMouseFollower : MonoBehaviour, IMotionModel {
         if (speed.magnitude > maxSpeed) {
             speed = speed.normalized * maxSpeed;
         }
+        
+        if(speed.magnitude > 0) {
+            transform.forward = speed.normalized;
+        }
         rigidbody.velocity = speed;
-        transform.forward = (target - rigidbody.position).normalized;
 	}
 
     void OnDrawGizmos() {
