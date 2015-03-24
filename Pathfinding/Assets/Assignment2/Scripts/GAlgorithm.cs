@@ -19,7 +19,7 @@ public class GAlgorithm : MonoBehaviour {
 	public int popSize;
 	public float mutationRate;
 	private List<List<int>> population;
-	private List<List<Vector3>> paths;
+	private List<RRTTree<Vector3>> paths;
 	private RRTTree<Vector3> tree;
 
 	public float acceleration;
@@ -39,14 +39,15 @@ public class GAlgorithm : MonoBehaviour {
 		num_mobile = mobiles.Length;
 		num_nodes = customers.Length;
 		tree = new RRTTree<Vector3>(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
-		
+
+		if (popSize % 2 != 0) {popSize=popSize+1;}
 		population = new List<List<int>> ();
 		costList = new List<float> ();
 		for(int i=0;i<popSize;i++){population.Add(new List<int>());
 			costList.Add(0);}
 
 		
-		if (popSize % 2 != 0) {popSize=popSize+1;}
+
 		//Main cycle
 		for (int run=0; run<num_nodes; run++) {
 						for (int k=0; k<popSize; k++) {
@@ -144,18 +145,25 @@ public class GAlgorithm : MonoBehaviour {
 			
 						}
 				}
-		paths = new List<List<Vector3>> ();
-		for(int x=0;x<mobiles.Length;x++){paths.Add(new List<Vector3>());}
+
+		paths = new List<RRTTree<Vector3>> ();
+		tree = new RRTTree<Vector3>(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f));
+		for(int x=0;x<mobiles.Length;x++){paths.Add(new RRTTree<Vector3>(new Vector3(0f, 0f, 0f), new Vector3(0f, 0f, 0f)));}
 
 		int st = 0;
 		int end = 0;
 		for(int i=0;i<mobiles.Length;i++){
+			paths = new List<RRTTree<Vector3>> ();
 			st = end;
 			end = end + bestSol[i+num_nodes];
+			paths.Add(DynamicRRTPathPlanning.MoveOrder(mobiles[i].transform.position, customers[bestSol[st]-1].transform.position, acceleration, minx, miny, maxx, maxy));
 			for(int j=st;j<=end;j++){
-				paths[i].Add(customers[bestSol[j]-1].transform.position);
+				paths.Add(DynamicRRTPathPlanning.MoveOrder(customers[bestSol[j]-1].transform.position, customers[bestSol[j+1]-1].transform.position, acceleration, minx, miny, maxx, maxy));
 			}
-			((IMotionModel) this.mobiles[i].GetComponent(typeof(IMotionModel))).SetWaypoints(paths[i]);
+			Debug.Log(tree.nearestOf(customers[bestSol[end]-1].transform.position).fullCost());
+			(
+				(IMotionModel) this.mobiles[i].GetComponent(typeof(IMotionModel))
+				).SetWaypoints(tree.cheapestInRadius(customers[bestSol[end]-1].transform.position,90).pathFromRoot());
 		}
 
 		print ("value = "+bestVal);
