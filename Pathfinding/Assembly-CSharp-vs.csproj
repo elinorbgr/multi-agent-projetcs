@@ -59,6 +59,7 @@
      <Compile Include="Assets\Assignment2\Scripts\SynchroStart.cs" />
      <Compile Include="Assets\Assignment2\Scripts\T3\GeneticRRT.cs" />
      <Compile Include="Assets\Assignment2\Scripts\T4\VehicleAvoidanceNoObstaclesDynamicPoint.cs" />
+     <Compile Include="Assets\Assignment2\Scripts\T5\DynamicCarAvoiding.cs" />
      <Compile Include="Assets\Assignment2\Scripts\T5\DynamicPointAvoiding.cs" />
      <Compile Include="Assets\Assignment2\Scripts\T6\KinematicFollower.cs" />
      <Compile Include="Assets\Assignment2\Scripts\T6\KinematicLocalInteraction.cs" />

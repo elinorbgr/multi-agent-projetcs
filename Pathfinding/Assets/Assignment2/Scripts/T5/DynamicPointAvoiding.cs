@@ -62,15 +62,17 @@ public class DynamicPointAvoiding : MonoBehaviour {
             velocitydiff = velocitydiff.normalized * maxAccel;
         }
 
-        float distance = velocity.magnitude*velocity.magnitude/maxAccel/2 +0.25f;
-        Collider[] hitColliders = Physics.OverlapSphere(pos, 4*distance);
+        float distance = velocity.magnitude*velocity.magnitude/maxAccel/2 +5f;
+        Collider[] hitColliders = Physics.OverlapSphere(pos, distance);
         if (hitColliders.Length>1) {
             int i = 0;
             Vector3 bias = new Vector3();
             while (i < hitColliders.Length) {
                 if ((hitColliders[i].bounds.center - pos).magnitude == 0f) { i++;continue; }
-                if (Vector3.Dot((hitColliders[i].bounds.center - pos), velocity) > -0.25) {
-                    bias -= (hitColliders[i].bounds.center - pos).normalized;
+                Vector3 hitpoint = NearestVertexTo(pos, hitColliders[i].gameObject);
+                if ((hitpoint-pos).magnitude > distance) { i++; continue; }
+                if (Vector3.Dot((hitpoint - pos), velocity) > -0.25) {
+                    bias -= (hitpoint - pos).normalized;
                 }
                 if ((hitColliders[i].bounds.center - pos).magnitude < distance) {
                     velocitydiff = - velocity.normalized*maxAccel*2;
@@ -104,7 +106,12 @@ public class DynamicPointAvoiding : MonoBehaviour {
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(
             rigidbody.position,
-            4*(rigidbody.velocity.magnitude*rigidbody.velocity.magnitude/acceleration/2 + 0.25f)
+            (rigidbody.velocity.magnitude*rigidbody.velocity.magnitude/acceleration/2 + 5f)
+        );
+        Gizmos.color = Color.red;
+        Gizmos.DrawWireSphere(
+            rigidbody.position,
+            5f
         );
     }
 
@@ -122,4 +129,26 @@ public class DynamicPointAvoiding : MonoBehaviour {
             this.moving = true;
         }
     }
+
+    public static Vector3 NearestVertexTo(Vector3 point, GameObject other) {
+        // convert point to local space
+        point = other.GetComponent<Transform>().InverseTransformPoint(point);
+        Mesh mesh = other.GetComponent<MeshFilter>().mesh;
+        if (mesh == null) { return Vector3.zero; }
+        float minDistanceSqr = Mathf.Infinity;
+        Vector3 nearestVertex = Vector3.zero;
+         
+        // scan all vertices to find nearest
+        foreach (Vector3 vertex in mesh.vertices) {
+            Vector3 diff = point-vertex;
+            float distSqr = diff.sqrMagnitude; 
+            if (distSqr < minDistanceSqr) {
+                minDistanceSqr = distSqr;
+                nearestVertex = vertex;
+            }
+        }
+         
+        // convert nearest vertex back to world space
+        return other.GetComponent<Transform>().transform.TransformPoint(nearestVertex);
+    } 
 }

@@ -79,7 +79,7 @@ public class DynamicCarRRTPathPlanning : MonoBehaviour {
 
         float baseradius = ((maxy-miny)+(maxx-minx))/16;
 
-        for(int i = 0; i < 300; i++) { // do at most 1.000 iterations
+        for(int i = 0; i < 2000; i++) { // do at most 1.000 iterations
             // draw a random point
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
             // find the nearest node
@@ -91,10 +91,10 @@ public class DynamicCarRRTPathPlanning : MonoBehaviour {
                     // the steering was successful (no collision with walls), we can keep the point !
                     RRTTree<Vector2>.Node me = t.insert(sr.endpos, p, sr.cost, new Vector2(sr.velocity, sr.angle));
 
-                    foreach (RRTTree<Vector2>.Node n in t.visibleInRadius(me.pos, baseradius)) {
+                    /*foreach (RRTTree<Vector2>.Node n in t.visibleInRadius(me.pos, baseradius)) {
                         if (n == me) { continue; }
                         tryToSteal(t, n, me, maxForce, maxAngle, length);
-                    }
+                    }*/
                 }
             }
         }
