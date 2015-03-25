@@ -62,7 +62,7 @@ public class DynamicPointAvoiding : MonoBehaviour {
             velocitydiff = velocitydiff.normalized * maxAccel;
         }
 
-        float distance = velocity.magnitude*velocity.magnitude/maxAccel/2 +0.5f;
+        float distance = velocity.magnitude*velocity.magnitude/maxAccel/2 +0.25f;
         Collider[] hitColliders = Physics.OverlapSphere(pos, 4*distance);
         if (hitColliders.Length>1) {
             int i = 0;
@@ -104,11 +104,12 @@ public class DynamicPointAvoiding : MonoBehaviour {
         Gizmos.color = Color.blue;
         Gizmos.DrawWireSphere(
             rigidbody.position,
-            4*(rigidbody.velocity.magnitude*rigidbody.velocity.magnitude/acceleration/2 + 0.5f)
+            4*(rigidbody.velocity.magnitude*rigidbody.velocity.magnitude/acceleration/2 + 0.25f)
         );
     }
 
     void MoveOrder(Vector3 goal) {
+        Debug.Log("run");
         this.tree = DynamicRRTPathPlanning.MoveOrder(this.transform.position, goal, this.acceleration, minx, miny, maxx, maxy);
         Debug.Log(this.tree.nodes.Count);
         this.SetWaypoints(this.tree.nearestOf(goal).pathFromRoot());

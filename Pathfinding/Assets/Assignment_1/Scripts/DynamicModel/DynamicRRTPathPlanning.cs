@@ -76,7 +76,7 @@ public class DynamicRRTPathPlanning {
 
         float baseradius = ((maxy-miny)+(maxx-minx))/16;
 
-        for(int i = 0; i<5000; i++) { // do at most 10.000 iterations
+        for(int i = 0; i<2000; i++) { // do at most 10.000 iterations
             // draw a random point
             Vector3 point = new Vector3(Random.Range(minx, maxx), 0.5f, Random.Range(miny, maxy));
             // find the nearest node
@@ -88,10 +88,10 @@ public class DynamicRRTPathPlanning {
                     // the steering was successful (no collision with walls), we can keep the point !
                     RRTTree<Vector3>.Node me = t.insert(sr.endpos, p, sr.cost, sr.velocity);
                     // steal neighbors
-                    foreach (RRTTree<Vector3>.Node n in t.visibleInRadius(me.pos, baseradius)) {
+                    /*foreach (RRTTree<Vector3>.Node n in t.visibleInRadius(me.pos, baseradius)) {
                         if (n == me) { continue; }
                         tryToSteal(t, n, me, acc);
-                    }
+                    }*/
                 }
             }
         }

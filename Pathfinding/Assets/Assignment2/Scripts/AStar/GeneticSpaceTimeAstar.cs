@@ -49,25 +49,31 @@ public class GeneticSpaceTimeAstar : MonoBehaviour, ISynchroStart {
     class Individual {
         public List<List<Vector3>> genom;
         public List<List<Vector3>> paths;
-        public uint score;
+        public int score;
 
         public Individual(List<List<Vector3>> genom, GeneticSpaceTimeAstar simulator) {
             this.genom = genom;
-            this.paths = simulator.st_a_star(genom);
+            KeyValuePair<int, List<List<Vector3>>> kv = simulator.st_a_star(genom);
             System.GC.Collect();
-            this.score = simulator.score(this.paths);
+            this.paths = kv.Value;
+            this.score = kv.Key;
         }
     }
 
     private List<List<Vector3>> genalg() {
         List<Individual> pool = new List<Individual>();
         for(int i=0; i<this.poolSize; i++) {
+            Debug.Log("Initial");
+            Debug.Log(i);
             pool.Add(randomIndividual());
         }
         pool = pool.OrderBy(x => x.score).ToList();
         for(int i=0; i<this.generations; i++) {
             List<Individual> children = new List<Individual>();
             for(int j=0; j<this.childrenCount; j++) {
+                Debug.Log("generation");
+                Debug.Log(i);
+                Debug.Log(j);
                 Individual a = breedChoose(pool);
                 Individual b = breedChoose(pool);
                 children.Add(breed(a, b));
@@ -183,9 +189,11 @@ public class GeneticSpaceTimeAstar : MonoBehaviour, ISynchroStart {
         return new Individual(new_genom, this);
     }
 
-    public List<List<Vector3>> st_a_star(List<List<Vector3>> mobiles_clients) {
+    public KeyValuePair<int, List<List<Vector3>>> st_a_star(List<List<Vector3>> mobiles_clients) {
 
         R reservations = new ReservationMap(this.graph);
+
+        int score = 0;
 
         int im = 0;
         List<List<Vector3>> paths = new List<List<Vector3>>();
@@ -206,6 +214,7 @@ public class GeneticSpaceTimeAstar : MonoBehaviour, ISynchroStart {
                 }
                 start = path[path.Count-1];
             }
+            if(path.Count > score) { score = path.Count; }
             // Then go back home
             List<Graph.Node> nnds = SpaceTimeAStar.spaceTimeAStar(
                 this.graph.NearestNodeOf(start),
@@ -222,7 +231,7 @@ public class GeneticSpaceTimeAstar : MonoBehaviour, ISynchroStart {
             im++;
         }
 
-        return paths;
+        return new KeyValuePair<int, List<List<Vector3>>>(score, paths);
 
     }
 
